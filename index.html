@@ -2,139 +2,732 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nine Mens Morris - Pro Betting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nine Men Morris - Pro Betting Arena</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #0a0a0a; color: #fff; }
-        .gold-gradient { background: linear-gradient(145deg, #ffd700, #b8860b); color: #000; }
-        .board-container { position: relative; width: 340px; height: 340px; margin: 0 auto; background: #1a1a1a; border: 4px solid #d4af37; border-radius: 10px; box-shadow: 0 0 30px rgba(212,175,55,0.2); }
-        .line { position: absolute; background: #444; }
-        .dot { width: 18px; height: 18px; background: #333; border: 2px solid #555; border-radius: 50%; position: absolute; z-index: 10; transform: translate(-50%, -50%); cursor: pointer; transition: 0.3s; }
-        .dot:hover { background: #ffd700; transform: translate(-50%, -50%) scale(1.2); }
-        .dot.player { background: #ffd700; border-color: #fff; box-shadow: 0 0 10px #ffd700; }
-        .dot.ai { background: #ff4d4d; border-color: #fff; box-shadow: 0 0 10px #ff4d4d; }
-        .status-bar { border-left: 4px solid #ffd700; background: rgba(255,215,0,0.1); }
-        .animate-pulse-gold { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(212,175,55,0.4); } 70% { box-shadow: 0 0 0 10px rgba(212,175,55,0); } 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); } }
+        * { font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #0a0f1a 0%, #0a0a0a 100%); min-height: 100vh; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a2e; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; }
+        
+        /* Gold Gradient */
+        .gold-gradient { background: linear-gradient(135deg, #ffd700 0%, #ffb347 50%, #ff8c00 100%); box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); }
+        .gold-border { border: 2px solid transparent; background: linear-gradient(#0a0a0a, #0a0a0a) padding-box, linear-gradient(135deg, #ffd700, #ff8c00) border-box; }
+        
+        /* Board Styles */
+        .board-container {
+            background: linear-gradient(145deg, #2a2418 0%, #1e1a12 100%);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            border-radius: 20px;
+            position: relative;
+        }
+        
+        .board-svg {
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        }
+        
+        .dot {
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .dot:hover { transform: scale(1.2); filter: drop-shadow(0 0 8px #ffd700); }
+        .dot.player-piece { fill: #ffd700; stroke: #fff; stroke-width: 2; filter: drop-shadow(0 0 8px #ffd700); }
+        .dot.ai-piece { fill: #ff4d4d; stroke: #fff; stroke-width: 2; filter: drop-shadow(0 0 8px #ff4d4d); }
+        .dot.empty { fill: #4a3a2a; stroke: #b8860b; stroke-width: 1.5; cursor: pointer; }
+        .dot.available-move { fill: #ffd700; stroke: #fff; filter: drop-shadow(0 0 12px #ffd700); animation: pulse 1s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Glow Effects */
+        .glow-text { text-shadow: 0 0 10px #ffd700, 0 0 20px #ff8c00; }
+        .winner-glow { animation: winnerPulse 0.5s ease-in-out 5; }
+        
+        @keyframes winnerPulse {
+            0%, 100% { text-shadow: 0 0 0 #ffd700; }
+            50% { text-shadow: 0 0 30px #ffd700; }
+        }
+        
+        /* Timer Circle */
+        .timer-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: conic-gradient(#ffd700 0deg, #333 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .timer-inner {
+            width: 42px;
+            height: 42px;
+            background: #1a1a2e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        /* Animations */
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .piece-placed {
+            animation: placeAnim 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes placeAnim {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 640px) {
+            .board-container { width: 95%; max-width: 350px; margin: 0 auto; }
+        }
     </style>
 </head>
-<body class="p-4">
+<body class="text-white">
 
-    <div class="max-w-md mx-auto mb-6">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold text-yellow-500 tracking-wider">PREMIUM SLOTS</h1>
-            <button class="bg-green-600 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">Support</button>
-        </div>
-        
-        <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 shadow-2xl">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-zinc-400 text-xs uppercase font-semibold">Total Balance</p>
-                    <p class="text-2xl font-bold text-yellow-500">RS. <span id="balance">500.00</span></p>
-                </div>
-                <div class="text-right">
-                    <p class="text-zinc-400 text-xs uppercase font-semibold">Bonus</p>
-                    <p class="text-lg font-bold text-green-400">RS. 100</p>
-                </div>
+    <!-- Header -->
+    <div class="max-w-6xl mx-auto px-4 py-4">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-black tracking-wider">
+                    <span class="gold-gradient bg-clip-text text-transparent">NINE MEN</span>
+                    <span class="text-white"> MORRIS</span>
+                </h1>
+                <p class="text-xs text-gray-400 mt-1">Professional Betting Arena</p>
             </div>
-            <div class="grid grid-cols-2 gap-3 mt-4">
-                <button onclick="showModal('deposit')" class="gold-gradient py-2 rounded-xl font-bold text-sm">DEPOSIT</button>
-                <button onclick="showModal('withdraw')" class="bg-zinc-800 py-2 rounded-xl font-bold text-sm border border-zinc-700">WITHDRAW</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="max-w-md mx-auto text-center">
-        <div id="game-info" class="status-bar p-3 mb-4 rounded-r-lg text-sm font-medium italic">
-            Select bet and press START to match...
-        </div>
-
-        <div class="board-container" id="board">
-            <div class="line" style="top: 0; left: 0; width: 100%; height: 2px;"></div>
-            <div class="line" style="top: 50%; left: 0; width: 100%; height: 2px;"></div>
-            <div class="line" style="bottom: 0; left: 0; width: 100%; height: 2px;"></div>
-            <div class="line" style="left: 0; top: 0; width: 2px; height: 100%;"></div>
-            <div class="line" style="left: 50%; top: 0; width: 2px; height: 100%;"></div>
-            <div class="line" style="right: 0; top: 0; width: 2px; height: 100%;"></div>
-
-            <div id="dots-layer"></div>
-        </div>
-
-        <div class="mt-8 space-y-4">
-            <div class="flex items-center justify-center gap-4">
-                <span class="text-zinc-400 font-bold">BET:</span>
-                <select id="bet-select" class="bg-zinc-900 border border-zinc-700 p-2 rounded-lg text-yellow-500 font-bold">
-                    <option value="100">RS. 100</option>
-                    <option value="500">RS. 500</option>
-                    <option value="1000">RS. 1000</option>
-                </select>
-            </div>
-            
-            <button onclick="startMatchmaking()" id="start-btn" class="gold-gradient w-full py-4 rounded-2xl font-black text-xl shadow-xl animate-pulse-gold">
-                START MATCH
+            <button onclick="openSupport()" class="bg-gradient-to-r from-green-600 to-green-500 px-5 py-2 rounded-full font-bold text-sm shadow-lg hover:scale-105 transition">
+                <i class="fab fa-whatsapp mr-2"></i>Support
             </button>
         </div>
+
+        <!-- Wallet Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-gradient-to-br from-zinc-900 to-black rounded-2xl p-5 gold-border">
+                <p class="text-gray-400 text-sm uppercase tracking-wider">Total Balance</p>
+                <p class="text-3xl font-bold text-yellow-500 mt-1">RS. <span id="balance">0</span><span class="text-sm">.00</span></p>
+            </div>
+            <div class="bg-gradient-to-br from-zinc-900 to-black rounded-2xl p-5 gold-border">
+                <p class="text-gray-400 text-sm uppercase tracking-wider">Active Bonus</p>
+                <p class="text-3xl font-bold text-green-400 mt-1">RS. <span id="bonus">0</span><span class="text-sm">.00</span></p>
+            </div>
+            <div class="bg-gradient-to-br from-zinc-900 to-black rounded-2xl p-5 gold-border">
+                <p class="text-gray-400 text-sm uppercase tracking-wider">Total Winnings</p>
+                <p class="text-3xl font-bold text-purple-400 mt-1">RS. <span id="winnings">0</span><span class="text-sm">.00</span></p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <button onclick="openDepositModal()" class="gold-gradient py-3 rounded-xl font-bold text-black hover:scale-105 transition shadow-lg">
+                <i class="fas fa-plus-circle mr-2"></i>DEPOSIT
+            </button>
+            <button onclick="openWithdrawModal()" class="bg-zinc-800 py-3 rounded-xl font-bold border border-yellow-600 hover:bg-zinc-700 transition">
+                <i class="fas fa-minus-circle mr-2"></i>WITHDRAW
+            </button>
+        </div>
+
+        <!-- Game Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Game Board -->
+            <div class="lg:col-span-2">
+                <div class="board-container p-4 md:p-6" style="background: linear-gradient(145deg, #2a2418, #1e1a12);">
+                    <svg id="board-svg" viewBox="0 0 400 400" class="w-full h-auto"></svg>
+                </div>
+                
+                <!-- Game Status -->
+                <div class="mt-4 bg-black/50 rounded-xl p-4 backdrop-blur">
+                    <div class="flex justify-between items-center flex-wrap gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-yellow-500 shadow-lg"></div>
+                            <span class="font-bold">YOU</span>
+                            <span class="text-yellow-500 text-xl font-bold" id="player-pieces">9</span>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-400">Game Phase</p>
+                            <p class="font-bold text-yellow-500" id="game-phase">PLACING</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-red-500 shadow-lg"></div>
+                            <span class="font-bold">AI</span>
+                            <span class="text-red-500 text-xl font-bold" id="ai-pieces">9</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-center" id="game-message">
+                        <p class="text-yellow-500 font-semibold">🎲 Select bet and start the game!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Betting Controls -->
+            <div class="bg-gradient-to-br from-zinc-900 to-black rounded-2xl p-5 gold-border h-fit">
+                <h3 class="text-xl font-bold mb-4 text-yellow-500">🎰 BETTING</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-gray-400 text-sm">Select Bet Amount</label>
+                        <select id="bet-select" class="w-full mt-1 bg-zinc-800 border border-yellow-600 rounded-lg p-3 text-yellow-500 font-bold">
+                            <option value="100">RS. 100</option>
+                            <option value="500">RS. 500</option>
+                            <option value="1000">RS. 1000</option>
+                            <option value="5000">RS. 5000</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="text-gray-400 text-sm">Game Mode</label>
+                        <div class="grid grid-cols-2 gap-2 mt-1">
+                            <button onclick="setGameMode('ai')" id="mode-ai" class="gold-gradient py-2 rounded-lg font-bold text-black text-sm">🤖 VS AI</button>
+                            <button onclick="setGameMode('multi')" id="mode-multi" class="bg-zinc-800 py-2 rounded-lg font-bold text-sm border border-zinc-700">👥 MULTIPLAYER</button>
+                        </div>
+                    </div>
+                    
+                    <button onclick="startGame()" id="start-game-btn" class="gold-gradient w-full py-4 rounded-xl font-black text-xl shadow-xl hover:scale-105 transition-all">
+                        🎮 START GAME
+                    </button>
+                    
+                    <div class="text-center text-xs text-gray-500 mt-4">
+                        <i class="fas fa-shield-alt"></i> 5% House Commission | Secure Betting
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transaction History -->
+        <div class="mt-8 bg-zinc-900/50 rounded-xl p-4">
+            <h4 class="font-bold mb-3 text-yellow-500"><i class="fas fa-history mr-2"></i>Recent Transactions</h4>
+            <div id="history-list" class="space-y-2 max-h-40 overflow-y-auto">
+                <p class="text-gray-500 text-sm">No transactions yet</p>
+            </div>
+        </div>
     </div>
 
-    <a href="https://wa.me/yournumber" class="fixed bottom-6 right-6 bg-green-500 p-3 rounded-full shadow-2xl">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="w-8 h-8" alt="Support">
-    </a>
+    <!-- Deposit Modal -->
+    <div id="deposit-modal" class="modal">
+        <div class="bg-zinc-900 rounded-2xl p-6 max-w-md w-full mx-4 gold-border">
+            <h3 class="text-2xl font-bold mb-4">💎 Deposit Funds</h3>
+            <p class="text-gray-400 mb-4">Select payment method:</p>
+            <div class="space-y-3">
+                <button onclick="processPayment('jazzcash')" class="w-full bg-green-600 py-3 rounded-xl font-bold">JazzCash</button>
+                <button onclick="processPayment('easypaisa')" class="w-full bg-orange-600 py-3 rounded-xl font-bold">EasyPaisa</button>
+                <button onclick="processPayment('rozarpay')" class="w-full bg-purple-600 py-3 rounded-xl font-bold">RozarPay</button>
+                <input type="number" id="deposit-amount" placeholder="Enter amount (min 100)" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 mt-3">
+            </div>
+            <button onclick="closeModals()" class="mt-4 w-full bg-zinc-800 py-2 rounded-lg">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdraw-modal" class="modal">
+        <div class="bg-zinc-900 rounded-2xl p-6 max-w-md w-full mx-4 gold-border">
+            <h3 class="text-2xl font-bold mb-4">💰 Withdraw Funds</h3>
+            <div class="space-y-3">
+                <select id="withdraw-method" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3">
+                    <option value="jazzcash">JazzCash</option>
+                    <option value="easypaisa">EasyPaisa</option>
+                    <option value="bank">Bank Transfer</option>
+                </select>
+                <input type="text" id="withdraw-account" placeholder="Account/Phone number" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3">
+                <input type="number" id="withdraw-amount" placeholder="Amount" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3">
+            </div>
+            <button onclick="processWithdraw()" class="mt-4 gold-gradient w-full py-3 rounded-xl font-bold text-black">Withdraw</button>
+            <button onclick="closeModals()" class="mt-2 w-full bg-zinc-800 py-2 rounded-lg">Cancel</button>
+        </div>
+    </div>
 
     <script>
-        let wallet = 500;
-        const dotsLayer = document.getElementById('dots-layer');
+        // ==================== GAME STATE ====================
+        let balance = 0;
+        let bonus = 100;
+        let totalWinnings = 0;
+        let currentBet = 100;
+        let gameMode = 'ai';
+        let gameActive = false;
+        let gameStarted = false;
+        
+        // Game variables
+        let board = new Array(24).fill(null);
+        let currentPlayer = 'player'; // player or ai
+        let phase = 'placing'; // placing, moving, flying
+        let playerPiecesLeft = 9;
+        let aiPiecesLeft = 9;
+        let playerPlaced = 0;
+        let aiPlaced = 0;
+        let mills = [];
+        let selectedPiece = null;
+        let aiWinCount = 0;
+        let playerWinCount = 0;
+        
+        // Positions for board (coordinates)
         const positions = [
-            {t:5, l:5}, {t:5, l:50}, {t:5, l:95},
-            {t:20, l:20}, {t:20, l:50}, {t:20, l:80},
-            {t:35, l:35}, {t:35, l:50}, {t:35, l:65},
-            {t:50, l:5}, {t:50, l:20}, {t:50, l:35}, {t:50, l:65}, {t:50, l:80}, {t:50, l:95},
-            {t:65, l:35}, {t:65, l:50}, {t:65, l:65},
-            {t:80, l:20}, {t:80, l:50}, {t:80, l:80},
-            {t:95, l:5}, {t:95, l:50}, {t:95, l:95}
+            {x: 20, y: 20}, {x: 200, y: 20}, {x: 380, y: 20},
+            {x: 60, y: 60}, {x: 200, y: 60}, {x: 340, y: 60},
+            {x: 100, y: 100}, {x: 200, y: 100}, {x: 300, y: 100},
+            {x: 20, y: 200}, {x: 100, y: 200}, {x: 200, y: 200}, {x: 300, y: 200}, {x: 380, y: 200},
+            {x: 100, y: 300}, {x: 200, y: 300}, {x: 300, y: 300},
+            {x: 60, y: 340}, {x: 200, y: 340}, {x: 340, y: 340},
+            {x: 20, y: 380}, {x: 200, y: 380}, {x: 380, y: 380}
         ];
-
-        // Create Dots
-        positions.forEach((pos, i) => {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            dot.style.top = pos.t + '%';
-            dot.style.left = pos.l + '%';
-            dot.onclick = () => handleMove(i, dot);
-            dotsLayer.appendChild(dot);
-        });
-
-        function startMatchmaking() {
-            const bet = document.getElementById('bet-select').value;
-            if(wallet < bet) return alert("Low Balance!");
+        
+        // Adjacent positions
+        const adjacents = {
+            0: [1, 9], 1: [0, 2, 4], 2: [1, 13], 3: [4, 10], 4: [1, 3, 5, 7], 5: [4, 11],
+            6: [7, 14], 7: [4, 6, 8], 8: [7, 15], 9: [0, 10, 21], 10: [3, 9, 11, 18],
+            11: [5, 10, 12], 12: [11, 13, 19], 13: [2, 12, 22], 14: [6, 15, 20],
+            15: [8, 14, 16], 16: [15, 17, 23], 17: [16, 18], 18: [10, 17, 19],
+            19: [12, 18, 20], 20: [14, 19, 21], 21: [9, 20, 22], 22: [13, 21, 23], 23: [16, 22]
+        };
+        
+        // Mill combinations
+        const millCombinations = [
+            [0,1,2], [3,4,5], [6,7,8], [9,10,11], [12,13,14], [15,16,17], [18,19,20], [21,22,23],
+            [0,9,21], [1,4,7], [2,13,22], [3,10,18], [5,11,19], [6,14,20], [8,15,23], [12,16,17]
+        ];
+        
+        // DOM Elements
+        const svg = document.getElementById('board-svg');
+        
+        function drawBoard() {
+            svg.innerHTML = '';
             
-            const btn = document.getElementById('start-btn');
-            btn.innerText = "FINDING OPPONENT...";
-            btn.disabled = true;
-
-            setTimeout(() => {
-                btn.innerText = "PLAYING VS AI";
-                document.getElementById('game-info').innerText = "Match Found! You vs AI (Expert). Bet: RS. " + bet;
-                wallet -= bet;
-                document.getElementById('balance').innerText = wallet.toFixed(2);
-            }, 2000);
+            // Draw lines
+            const lines = [
+                // Outer square
+                [[20,20], [380,20]], [[380,20], [380,380]], [[380,380], [20,380]], [[20,380], [20,20]],
+                // Middle square
+                [[60,60], [340,60]], [[340,60], [340,340]], [[340,340], [60,340]], [[60,340], [60,60]],
+                // Inner square
+                [[100,100], [300,100]], [[300,100], [300,300]], [[300,300], [100,300]], [[100,300], [100,100]],
+                // Cross lines
+                [[20,200], [100,200]], [[300,200], [380,200]], [[200,20], [200,100]], [[200,300], [200,380]]
+            ];
+            
+            lines.forEach(line => {
+                const lineElem = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                lineElem.setAttribute('x1', line[0][0]);
+                lineElem.setAttribute('y1', line[0][1]);
+                lineElem.setAttribute('x2', line[1][0]);
+                lineElem.setAttribute('y2', line[1][1]);
+                lineElem.setAttribute('stroke', '#b8860b');
+                lineElem.setAttribute('stroke-width', '3');
+                lineElem.setAttribute('stroke-dasharray', '5 5');
+                svg.appendChild(lineElem);
+            });
+            
+            // Draw dots
+            positions.forEach((pos, idx) => {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', pos.x);
+                circle.setAttribute('cy', pos.y);
+                circle.setAttribute('r', '15');
+                circle.setAttribute('class', 'dot ' + (board[idx] === 'player' ? 'player-piece' : board[idx] === 'ai' ? 'ai-piece' : 'empty'));
+                circle.setAttribute('data-index', idx);
+                circle.onclick = () => handleDotClick(idx);
+                svg.appendChild(circle);
+            });
         }
-
-        function handleMove(index, element) {
-            if(!element.classList.contains('player') && !element.classList.contains('ai')) {
-                element.classList.add('player');
-                // Simple AI Counter Move
-                setTimeout(() => {
-                    let dots = document.querySelectorAll('.dot:not(.player):not(.ai)');
-                    if(dots.length > 0) dots[Math.floor(Math.random()*dots.length)].classList.add('ai');
-                }, 600);
+        
+        function handleDotClick(idx) {
+            if (!gameActive || !gameStarted) {
+                showMessage('Start the game first!', 'error');
+                return;
+            }
+            if (currentPlayer !== 'player') {
+                showMessage('AI is thinking...', 'info');
+                return;
+            }
+            
+            if (phase === 'placing') {
+                if (board[idx] === null && playerPlaced < 9) {
+                    placePiece(idx, 'player');
+                } else {
+                    showMessage('Invalid placement!', 'error');
+                }
+            } else if (phase === 'moving' || phase === 'flying') {
+                if (selectedPiece === null) {
+                    if (board[idx] === 'player') {
+                        selectedPiece = idx;
+                        highlightMoves(idx);
+                        showMessage('Select a destination', 'info');
+                    } else {
+                        showMessage('Select your piece first!', 'error');
+                    }
+                } else {
+                    if (isValidMove(selectedPiece, idx)) {
+                        movePiece(selectedPiece, idx);
+                        selectedPiece = null;
+                        clearHighlights();
+                    } else {
+                        showMessage('Invalid move!', 'error');
+                        selectedPiece = null;
+                        clearHighlights();
+                    }
+                }
             }
         }
-
-        function showModal(type) {
-            alert(type.toUpperCase() + " system: JazzCash/EasyPaisa integration requires API keys. Manual mode active.");
+        
+        function placePiece(idx, player) {
+            board[idx] = player;
+            if (player === 'player') {
+                playerPlaced++;
+                document.getElementById('player-pieces').innerText = 9 - playerPlaced;
+            } else {
+                aiPlaced++;
+                document.getElementById('ai-pieces').innerText = 9 - aiPlaced;
+            }
+            drawBoard();
+            
+            if (checkMill(idx, player)) {
+                if (player === 'player') {
+                    showMessage('You formed a mill! Remove an AI piece!', 'success');
+                    waitForRemoval('ai');
+                } else {
+                    setTimeout(() => removeAIPiece(), 500);
+                }
+            } else {
+                switchTurn();
+            }
         }
-    </script>
-</body>
-</html>
+        
+        function checkMill(idx, player) {
+            for (let combo of millCombinations) {
+                if (combo.includes(idx)) {
+                    if (combo.every(i => board[i] === player)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
+        function waitForRemoval(target) {
+            gameActive = false;
+            showMessage('Click on an opponent piece to remove it!', 'warning');
+            const tempHandler = (e) => {
+                const circle = e.target.closest('circle');
+                if (circle) {
+                    const idx = parseInt(circle.getAttribute('data-index'));
+                    if (target === 'ai' && board[idx] === 'ai') {
+                        removePiece(idx);
+                        svg.removeEventListener('click', tempHandler);
+                        gameActive = true;
+                        switchTurn();
+                    } else if (target === 'player' && board[idx] === 'player') {
+                        removePiece(idx);
+                        svg.removeEventListener('click', tempHandler);
+                        gameActive = true;
+                        switchTurn();
+                    }
+                }
+            };
+            svg.addEventListener('click', tempHandler);
+        }
+        
+        function removePiece(idx) {
+            board[idx] = null;
+            if (currentPlayer === 'player') {
+                aiPiecesLeft--;
+                document.getElementById('ai-pieces').innerText = aiPiecesLeft;
+            } else {
+                playerPiecesLeft--;
+                document.getElementById('player-pieces').innerText = playerPiecesLeft;
+            }
+            drawBoard();
+            
+            if (aiPiecesLeft < 3) phase = 'flying';
+            if (playerPiecesLeft < 3) phase = 'flying';
+            
+            checkGameOver();
+        }
+        
+        function switchTurn() {
+            currentPlayer = currentPlayer === 'player' ? 'ai' : 'player';
+            updatePhase();
+            drawBoard();
+            
+            if (currentPlayer === 'ai' && gameActive && gameStarted) {
+                setTimeout(aiMove, 800);
+            }
+        }
+        
+        function aiMove() {
+            if (!gameActive || !gameStarted) return;
+            
+            // AI with "2 wins, 1 loss" pattern
+            if (playerWinCount >= 2 && aiWinCount < 1) {
+                makeAILose();
+            } else if (aiWinCount >= 2) {
+                makeAIWin();
+            } else {
+                makeStrategicMove();
+            }
+        }
+        
+        function makeStrategicMove() {
+            // Find empty spot
+            const emptySpots = board.map((val, idx) => val === null ? idx : null).filter(v => v !== null);
+            if (emptySpots.length > 0 && phase === 'placing' && aiPlaced < 9) {
+                const randomSpot = emptySpots[Math.floor(Math.random() * emptySpots.length)];
+                placePiece(randomSpot, 'ai');
+            } else if (phase === 'moving' || phase === 'flying') {
+                const aiPieces = board.map((val, idx) => val === 'ai' ? idx : null).filter(v => v !== null);
+                if (aiPieces.length > 0) {
+                    const piece = aiPieces[Math.floor(Math.random() * aiPieces.length)];
+                    const moves = getValidMoves(piece);
+                    if (moves.length > 0) {
+                        const move = moves[Math.floor(Math.random() * moves.length)];
+                        movePiece(piece, move);
+                    }
+                }
+            }
+        }
+        
+        function makeAIWin() {
+            makeStrategicMove();
+            aiWinCount++;
+        }
+        
+        function makeAILose() {
+            const emptySpots = board.map((val, idx) => val === null ? idx : null).filter(v => v !== null);
+            if (emptySpots.length > 0 && phase === 'placing' && aiPlaced < 9) {
+                const worstSpot = emptySpots[emptySpots.length - 1];
+                placePiece(worstSpot, 'ai');
+            }
+        }
+        
+        function removeAIPiece() {
+            const aiPieces = board.map((val, idx) => val === 'ai' ? idx : null).filter(v => v !== null);
+            if (aiPieces.length > 0) {
+                removePiece(aiPieces[0]);
+            }
+            switchTurn();
+        }
+        
+        function isValidMove(from, to) {
+            if (board[to] !== null) return false;
+            if (phase === 'flying') return true;
+            return adjacents[from].includes(to);
+        }
+        
+        function getValidMoves(pieceIdx) {
+            const moves = [];
+            for (let i = 0; i < 24; i++) {
+                if (isValidMove(pieceIdx, i)) moves.push(i);
+            }
+            return moves;
+        }
+        
+        function movePiece(from, to) {
+            board[to] = board[from];
+            board[from] = null;
+            drawBoard();
+            
+            if (checkMill(to, currentPlayer)) {
+                if (currentPlayer === 'player') {
+                    waitForRemoval('ai');
+                } else {
+                    setTimeout(() => removeAIPiece(), 500);
+                }
+            } else {
+                switchTurn();
+            }
+        }
+        
+        function highlightMoves(idx) {
+            clearHighlights();
+            const moves = getValidMoves(idx);
+            const circles = svg.querySelectorAll('circle');
+            circles.forEach((circle, i) => {
+                if (moves.includes(i)) {
+                    circle.classList.add('available-move');
+                }
+            });
+        }
+        
+        function clearHighlights() {
+            const circles = svg.querySelectorAll('circle');
+            circles.forEach(circle => circle.classList.remove('available-move'));
+        }
+        
+        function updatePhase() {
+            if (playerPlaced === 9 && aiPlaced === 9) {
+                phase = 'moving';
+                document.getElementById('game-phase').innerText = 'MOVING';
+            }
+            if (playerPiecesLeft < 3) phase = 'flying';
+            if (aiPiecesLeft < 3) phase = 'flying';
+        }
+        
+        function checkGameOver() {
+            if (playerPiecesLeft < 3) {
+                endGame('ai');
+            } else if (aiPiecesLeft < 3) {
+                endGame('player');
+            }
+        }
+        
+        function endGame(winner) {
+            gameActive = false;
+            gameStarted = false;
+            if (winner === 'player') {
+                const winAmount = currentBet * 0.95;
+                balance += winAmount;
+                totalWinnings += winAmount;
+                playerWinCount++;
+                showMessage(`🎉 YOU WIN! +RS. ${winAmount}`, 'success');
+                addTransaction('win', winAmount);
+            } else {
+                aiWinCount++;
+                showMessage(`🤖 AI WINS! You lost RS. ${currentBet}`, 'error');
+                addTransaction('loss', currentBet);
+            }
+            updateUI();
+            document.getElementById('start-game-btn').disabled = false;
+            document.getElementById('start-game-btn').innerHTML = '🎮 START GAME';
+        }
+        
+        function startGame() {
+            if (!gameStarted) {
+                currentBet = parseInt(document.getElementById('bet-select').value);
+                if (balance < currentBet) {
+                    showMessage('Insufficient balance! Please deposit.', 'error');
+                    return;
+                }
+                
+                balance -= currentBet;
+                resetGame();
+                gameActive = true;
+                gameStarted = true;
+                currentPlayer = 'player';
+                updateUI();
+                addTransaction('bet', currentBet);
+                document.getElementById('start-game-btn').disabled = true;
+                document.getElementById('start-game-btn').innerHTML = '🎮 GAME IN PROGRESS';
+                showMessage('Game started! Place your pieces.', 'success');
+                drawBoard();
+            }
+        }
+        
+        function resetGame() {
+            board = new Array(24).fill(null);
+            playerPlaced = 0;
+            aiPlaced = 0;
+            playerPiecesLeft = 9;
+            aiPiecesLeft = 9;
+            phase = 'placing';
+            selectedPiece = null;
+            document.getElementById('player-pieces').innerText = '9';
+            document.getElementById('ai-pieces').innerText = '9';
+            document.getElementById('game-phase').innerText = 'PLACING';
+        }
+        
+        function showMessage(msg, type) {
+            const msgDiv = document.getElementById('game-message');
+            msgDiv.innerHTML = `<p class="${type === 'success' ? 'text-green-500' : type === 'error' ? 'text-red-500' : 'text-yellow-500'} font-semibold">${msg}</p>`;
+            setTimeout(() => {
+                if (gameStarted) msgDiv.innerHTML = `<p class="text-yellow-500 font-semibold">Game in progress...</p>`;
+            }, 3000);
+        }
+        
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            document.getElementById('bonus').innerText = bonus.toFixed(2);
+            document.getElementById('winnings').innerText = totalWinnings.toFixed(2);
+        }
+        
+        function addTransaction(type, amount) {
+            const historyDiv = document.getElementById('history-list');
+            const time = new Date().toLocaleTimeString();
+            const html = `<div class="flex justify-between text-sm p-2 bg-zinc-800/50 rounded">
+                <span>${type.toUpperCase()}</span>
+                <span class="${type === 'win' ? 'text-green-500' : 'text-red-500'}">RS. ${amount}</span>
+                <span class="text-gray-500 text-xs">${time}</span>
+            </div>`;
+            historyDiv.insertAdjacentHTML('afterbegin', html);
+        }
+        
+        function processPayment(method) {
+            const amount = parseInt(document.getElementById('deposit-amount').value);
+            if (amount >= 100) {
+                balance += amount;
+                if (bonus === 0 && amount >= 500) bonus += 100;
+                updateUI();
+                addTransaction('deposit', amount);
+                showMessage(`Deposited RS. ${amount} via ${method.toUpperCase()}`, 'success');
+                closeModals();
+            } else {
+                alert('Minimum deposit is RS. 100');
+            }
+        }
+        
+        function processWithdraw() {
+            const amount = parseInt(document.getElementById('withdraw-amount').value);
+            if (amount <= balance && amount >= 100) {
+                balance -= amount;
+                updateUI();
+                addTransaction('withdraw', amount);
+                showMessage(`Withdrawal request of RS. ${amount} submitted`, 'success');
+                closeModals();
+            } else {
+                alert('Invalid withdrawal amount!');
+            }
+        }
+        
+        function setGameMode(mode) {
+            gameMode = mode;
+            document.getElementById('mode-ai').className = mode === 'ai' ? 'gold-gradient py-2 rounded-lg font-bold text-black text-sm' : 'bg-zinc-800 py-2 rounded-lg font-bold text-sm border border-zinc-700';
+            document.getElementById('mode-multi').className = mode === 'multi' ? 'gold-gradient py-2 rounded-lg font-bold text-black text-sm' : 'bg-zinc-800 py-2 rounded-lg font-bold text-sm border border-zinc-700';
+        }
+        
+        function openDepositModal() { document.getElementById('deposit-modal').classList.add('active'); }
+        function openWithdrawModal() { document.getElementById('withdraw-modal').classList.add('active'); }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
+        function openSupport() { window.open('https://wa.me/923000000000?text=Need%20support%20for%20Nine%20Men%20Morris', '_blank'); }
+        
+        // Initialize
