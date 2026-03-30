@@ -9,48 +9,54 @@
 </head>
 <body>
 
-    <div id="login-overlay" class="overlay">
-        <div class="login-card">
-            <h2>Welcome Pro Player</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="emailLogin()" class="btn-main">Login / Sign Up</button>
-            <div class="separator">OR</div>
-            <button onclick="googleLogin()" class="btn-google">Login with Google</button>
-        </div>
-    </div>
-
     <div class="game-container">
         <header>
             <h1>NINE MEN MORRIS</h1>
-            <p>ADVANCED AI SYSTEM</p>
+            <p class="subtitle">ADVANCED AI SYSTEM</p>
         </header>
 
         <div class="score-board">
-            <div class="stat"><span>YOU</span><br><b id="player-pieces">9</b></div>
-            <div class="phase-box"><span>PHASE</span><br><b id="game-phase">PLACE</b></div>
-            <div class="stat"><span>AI</span><br><b id="ai-pieces">9</b></div>
+            <div class="stat-box">
+                <span class="label">YOU</span>
+                <span id="player-pieces" class="value">9</span>
+            </div>
+            <div class="phase-display">
+                <span class="label">PHASE</span>
+                <span id="game-phase" class="phase-text">PLACE</span>
+            </div>
+            <div class="stat-box">
+                <span class="label">AI</span>
+                <span id="ai-pieces" class="value">9</span>
+            </div>
         </div>
 
-        <div id="board" class="board-layout">
-            </div>
+        <div id="board-container" class="glass-panel">
+            <div id="game-board">
+                </div>
+        </div>
 
-        <div class="betting-section">
-            <p>SET YOUR BET</p>
-            <div class="bet-input-wrapper">
-                <span>$</span>
-                <input type="number" id="bet-amount" value="100" min="10">
+        <div class="controls-panel">
+            <div class="bet-input-section">
+                <p>SET YOUR BET AMOUNT</p>
+                <div class="input-wrapper">
+                    <span class="currency">$</span>
+                    <input type="number" id="bet-amount" value="100" min="10" step="10">
+                </div>
             </div>
-            <button id="start-btn" onclick="startGame()" class="btn-gold">🎮 START GAME</button>
-            <button id="reset-btn" onclick="resetGame()" class="btn-outline">🔄 RESET</button>
+            
+            <div class="action-buttons">
+                <button id="start-btn" onclick="handleStart()" class="btn-primary">🎮 START GAME</button>
+                <button id="reset-btn" onclick="handleReset()" class="btn-secondary">🔄 RESET</button>
+            </div>
         </div>
     </div>
 
-    <div id="win-modal" class="modal">
-        <div class="modal-content">
-            <h2 id="winner-text">YOU WIN!</h2>
-            <p id="win-prize">You earned $200</p>
-            <button onclick="closeModal()" class="btn-gold">PLAY AGAIN</button>
+    <div id="win-overlay" class="overlay">
+        <div class="win-card">
+            <h2 id="result-title">VICTORY!</h2>
+            <p id="result-message">You won the bet!</p>
+            <div class="prize-display">$<span id="final-prize">0</span></div>
+            <button onclick="closeWinOverlay()" class="btn-primary">PLAY AGAIN</button>
         </div>
     </div>
 
