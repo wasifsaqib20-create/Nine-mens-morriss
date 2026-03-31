@@ -1,11 +1,13 @@
-// Backend Logic for AI decision
-const aiBehavior = (gameId, aiHistory) => {
-    // Check history: if AI won last 2 games, force a "mistake" (loss)
-    const recentWins = aiHistory.filter(h => h.result === 'win').length;
+function processGameResult(winnerId, totalBet) {
+    const commissionRate = 0.05; // 5%
+    const commission = totalBet * commissionRate;
+    const prizeMoney = totalBet - commission;
+
+    // 1. Update Winner's Balance in Database
+    updateUserBalance(winnerId, prizeMoney);
+
+    // 2. Transfer Commission to Admin (NowPayments API)
+    sendToCryptoWallet(commission, "TRUST_WALLET_ADDRESS");
     
-    if (recentWins >= 2) {
-        return "make_random_move"; // AI plays badly to lose
-    } else {
-        return "make_best_move";   // AI plays perfectly to win
-    }
-};
+    return { prizeMoney, commission };
+}
