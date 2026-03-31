@@ -1,5 +1,17 @@
 <body>
+<style>
+#board {
+  position: relative;
+  width: 400px;
+  height: 400px;
+}
 
+#lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+</style>
 <h1>NINE MEN MORRIS</h1>
 
 <div id="board">
@@ -19,16 +31,16 @@ const points = [
 ];
 
 points.forEach(p => {
-  let dot = document.createElement("div");
-  dot.style.position = "absolute";
-  dot.style.width = "10px";
-  dot.style.height = "10px";
-  dot.style.background = "blue";
-  dot.style.borderRadius = "50%";
-  dot.style.left = p[0] + "%";
-  dot.style.top = p[1] + "%";
-  dot.style.transform = "translate(-50%, -50%)";
-
+let dot = document.createElement("div");
+dot.style.position = "absolute";
+dot.style.width = "14px";
+dot.style.height = "14px";
+dot.style.border = "2px solid white";
+dot.style.background = "#5a3b1e";
+dot.style.borderRadius = "50%";
+dot.style.left = p[0] + "%";
+dot.style.top = p[1] + "%";
+dot.style.transform = "translate(-50%, -50%)";
   board.appendChild(dot);
 });
   const canvas = document.getElementById("lines");
