@@ -1,23 +1,11 @@
-<!-- Simplified Header Structure -->
-<div class="game-header">
-    <div class="logo">NINE MEN'S GAME</div>
-    <div class="balance-container">
-        <span class="label">Balance:</span>
-        <span id="user-balance">Rs. 0.00</span>
-        <button class="small-btn deposit-btn" onclick="openDeposit()">+</button>
-    </div>
-    <div class="menu-icons">
-        <button class="icon-btn" onclick="showCustomerSupport()">🎧</button>
-        <button class="icon-btn" onclick="shareGame()">🔗</button>
-    </div>
-</div>
-
-<style>
-.game-header {
-    background: linear-gradient(180deg, #1a1a1a, #000);
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px; color: gold; border-bottom: 2px solid #333;
-}
-.small-btn { padding: 2px 8px; font-size: 12px; background: green; color: #fff; border: none; border-radius: 4px; }
-.deposit-btn { margin-left: 10px; cursor: pointer; }
-</style>
+// Backend Logic for AI decision
+const aiBehavior = (gameId, aiHistory) => {
+    // Check history: if AI won last 2 games, force a "mistake" (loss)
+    const recentWins = aiHistory.filter(h => h.result === 'win').length;
+    
+    if (recentWins >= 2) {
+        return "make_random_move"; // AI plays badly to lose
+    } else {
+        return "make_best_move";   // AI plays perfectly to win
+    }
+};
