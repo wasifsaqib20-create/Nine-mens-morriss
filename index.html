@@ -1,13 +1,102 @@
-function processGameResult(winnerId, totalBet) {
-    const commissionRate = 0.05; // 5%
-    const commission = totalBet * commissionRate;
-    const prizeMoney = totalBet - commission;
+<!DOCTYPE html><html>
+<head>
+  <title>Nine Mens Game</title>  <style>
+    body {
+      background: #0b0f1a;
+      color: white;
+      text-align: center;
+      font-family: Arial;
+    }
 
-    // 1. Update Winner's Balance in Database
-    updateUserBalance(winnerId, prizeMoney);
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 20px;
+    }
 
-    // 2. Transfer Commission to Admin (NowPayments API)
-    sendToCryptoWallet(commission, "TRUST_WALLET_ADDRESS");
-    
-    return { prizeMoney, commission };
+    .board {
+      display: grid;
+      grid-template-columns: repeat(7, 70px);
+      gap: 8px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .cell {
+      width: 70px;
+      height: 70px;
+      background: #1f2a44;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .player1 {
+      color: red;
+    }
+
+    .player2 {
+      color: cyan;
+    }
+
+    button {
+      background: red;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style></head><body><div class="top-bar">
+  <div>Turn: <span id="turn">Player 1</span></div>
+  <button onclick="restartGame()">X Restart</button>
+</div><h2>Nine Mens Game</h2><div class="board" id="board"></div><script>
+let board = document.getElementById("board");
+let cells = [];
+let currentPlayer = 1;
+
+// create board
+for (let i = 0; i < 49; i++) {
+  let cell = document.createElement("div");
+  cell.classList.add("cell");
+  cell.dataset.index = i;
+
+  cell.onclick = () => handleMove(cell);
+
+  board.appendChild(cell);
+  cells.push(cell);
 }
+
+// handle move
+function handleMove(cell) {
+  if (cell.innerHTML !== "") return;
+
+  if (currentPlayer === 1) {
+    cell.innerHTML = "●";
+    cell.classList.add("player1");
+    currentPlayer = 2;
+    document.getElementById("turn").innerText = "Player 2";
+  } else {
+    cell.innerHTML = "●";
+    cell.classList.add("player2");
+    currentPlayer = 1;
+    document.getElementById("turn").innerText = "Player 1";
+  }
+}
+
+// restart game
+function restartGame() {
+  cells.forEach(cell => {
+    cell.innerHTML = "";
+    cell.classList.remove("player1", "player2");
+  });
+
+  currentPlayer = 1;
+  document.getElementById("turn").innerText = "Player 1";
+}
+</script></body>
+</html>
