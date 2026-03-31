@@ -2,7 +2,9 @@
 
 <h1>NINE MEN MORRIS</h1>
 
-<div id="board"></div>
+<div id="board">
+  <canvas id="lines"></canvas>
+</div>
 <script>
 const board = document.getElementById("board");
 
@@ -29,5 +31,44 @@ points.forEach(p => {
 
   board.appendChild(dot);
 });
+  const canvas = document.getElementById("lines");
+const ctx = canvas.getContext("2d");
+
+canvas.width = board.offsetWidth;
+canvas.height = board.offsetHeight;
+
+ctx.strokeStyle = "black";
+ctx.lineWidth = 2;
+
+function drawLine(x1,y1,x2,y2){
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  ctx.stroke();
+}
+
+// outer square
+drawLine(40,40,360,40);
+drawLine(360,40,360,360);
+drawLine(360,360,40,360);
+drawLine(40,360,40,40);
+
+// middle square
+drawLine(80,80,320,80);
+drawLine(320,80,320,320);
+drawLine(320,320,80,320);
+drawLine(80,320,80,80);
+
+// inner square
+drawLine(120,120,280,120);
+drawLine(280,120,280,280);
+drawLine(280,280,120,280);
+drawLine(120,280,120,120);
+
+// connections
+drawLine(200,40,200,120);
+drawLine(200,280,200,360);
+drawLine(40,200,120,200);
+drawLine(280,200,360,200);
 </script>
 </body>
