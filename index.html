@@ -1,250 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Nine Men Morris</title>
+  <style>
+    body {
+      background: #1c1c1c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+      font-family: Arial;
+    }
 
-<title>Nine Men's Morris</title>
+    h1 {
+      color: gold;
+    }
 
-<style>
-body {
-  background:#1e1e1e;
-  color:white;
-  text-align:center;
-  font-family:Arial;
-  touch-action: manipulation;
-}
-
-h1 { color: gold; }
-
-canvas {
-  background:#c89b63;
-  border-radius:20px;
-  margin-top:20px;
-  width:90vw;
-  max-width:400px;
-}
-
-button {
-  margin-top:15px;
-  padding:10px 25px;
-  border:none;
-  background:gold;
-  border-radius:20px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-#backBtn {
-  background:#ff4444;
-  font-size:12px;
-  padding:6px 15px;
-}
-
-#winScreen {
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:rgba(0,0,0,0.9);
-  color:white;
-  display:none;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  font-size:30px;
-}
-</style>
+    canvas {
+      background: #c89b63;
+      border-radius: 20px;
+      margin-top: 20px;
+    }
+  </style>
 </head>
-
 <body>
 
 <h1>NINE MEN MORRIS</h1>
-<h3 id="status">Press Connect Game</h3>
 
-<canvas id="board" width="400" height="400"></canvas>
-<br>
-
-<button onclick="startGame()">CONNECT GAME</button>
-<br>
-<button id="backBtn" onclick="resign()">BACK</button>
-
-<div id="winScreen">
-  <h1 id="winnerText"></h1>
-  <button onclick="startGame()">PLAY AGAIN</button>
-</div>
+<canvas id="board" width="300" height="300"></canvas>
 
 <script>
-
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
-let currentPlayer = "player";
-let playerPieces = 9;
-let aiPieces = 9;
+// draw squares
+function drawBoard() {
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 3;
 
-const points = [
-  [50,50],[200,50],[350,50],
-  [100,100],[200,100],[300,100],
-  [150,150],[200,150],[250,150],
-  [50,200],[100,200],[150,200],
-  [250,200],[300,200],[350,200],
-  [150,250],[200,250],[250,250],
-  [100,300],[200,300],[300,300],
-  [50,350],[200,350],[350,350]
-];
+  // outer
+  ctx.strokeRect(20, 20, 260, 260);
+  // middle
+  ctx.strokeRect(60, 60, 180, 180);
+  // inner
+  ctx.strokeRect(100, 100, 100, 100);
 
-let board = Array(24).fill(null);
+  // lines
+  ctx.beginPath();
+  ctx.moveTo(150, 20); ctx.lineTo(150, 100);
+  ctx.moveTo(150, 200); ctx.lineTo(150, 280);
+  ctx.moveTo(20, 150); ctx.lineTo(100, 150);
+  ctx.moveTo(200, 150); ctx.lineTo(280, 150);
+  ctx.stroke();
 
-// DRAW
-function drawBoard(){
-  ctx.clearRect(0,0,400,400);
+  // points (24)
+  const points = [
+    [20,20],[150,20],[280,20],
+    [60,60],[150,60],[240,60],
+    [100,100],[150,100],[200,100],
+    [20,150],[60,150],[100,150],
+    [200,150],[240,150],[280,150],
+    [100,200],[150,200],[200,200],
+    [60,240],[150,240],[240,240],
+    [20,280],[150,280],[280,280]
+  ];
 
-  ctx.strokeStyle="#5c3b1e";
-  ctx.lineWidth=3;
-
-  drawSquare(50,50,300);
-  drawSquare(100,100,200);
-  drawSquare(150,150,100);
-
-  drawLine(200,50,200,150);
-  drawLine(200,250,200,350);
-  drawLine(50,200,150,200);
-  drawLine(250,200,350,200);
-
-  points.forEach((p,i)=>{
+  points.forEach(p => {
     ctx.beginPath();
-    ctx.arc(p[0],p[1],6,0,Math.PI*2);
-    ctx.fillStyle = board[i] ? "#222" : "#00aaff"; // 🔵 empty blue
+    ctx.arc(p[0], p[1], 5, 0, Math.PI*2);
     ctx.fill();
-
-    if(board[i]){
-      drawPiece(p[0],p[1], board[i]);
-    }
   });
 }
 
-function drawPiece(x,y,type,scale=1){
-  ctx.beginPath();
-  ctx.arc(x,y,14*scale,0,Math.PI*2);
-  ctx.fillStyle = type==="player"?"white":"black";
-  ctx.fill();
-}
-
-// CLICK
-canvas.addEventListener("click",(e)=>{
-  if(currentPlayer!=="player") return;
-
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-
-  const x = (e.clientX - rect.left) * scaleX;
-  const y = (e.clientY - rect.top) * scaleY;
-
-  let clicked = getPoint(x,y);
-  if(clicked===null) return;
-
-  if(board[clicked]===null && playerPieces>0){
-    animatePlace(clicked,"player");
-  }
-});
-
-// FIND POINT
-function getPoint(x,y){
-  for(let i=0;i<points.length;i++){
-    let dx = x - points[i][0];
-    let dy = y - points[i][1];
-    if(Math.sqrt(dx*dx+dy*dy)<18) return i;
-  }
-  return null;
-}
-
-// ANIMATION
-function animatePlace(index, player){
-  let scale = 0;
-
-  function grow(){
-    drawBoard();
-    drawPiece(points[index][0], points[index][1], player, scale);
-    scale += 0.1;
-
-    if(scale < 1){
-      requestAnimationFrame(grow);
-    } else {
-      board[index] = player;
-      playerPieces--;
-      checkWin();
-      switchTurn();
-    }
-  }
-  grow();
-}
-
-// TURN
-function switchTurn(){
-  currentPlayer = currentPlayer==="player"?"ai":"player";
-  document.getElementById("status").innerText = "Turn: "+currentPlayer;
-
-  if(currentPlayer==="ai"){
-    setTimeout(aiMove,800);
-  }
-}
-
-// AI
-function aiMove(){
-  let empty = board.map((v,i)=>v===null?i:null).filter(v=>v!==null);
-  if(empty.length===0) return;
-
-  let move = empty[Math.floor(Math.random()*empty.length)];
-  board[move]="ai";
-  aiPieces--;
-
-  checkWin();
-  switchTurn();
-  drawBoard();
-}
-
-// WIN CHECK
-function checkWin(){
-  if(playerPieces===0 && aiPieces===0){
-    return;
-  }
-
-  if(playerPieces<=0){
-    showWinner("Computer Wins 🤖");
-  }
-  if(aiPieces<=0){
-    showWinner("You Win 🎉");
-  }
-}
-
-// WIN SCREEN
-function showWinner(text){
-  document.getElementById("winnerText").innerText = text;
-  document.getElementById("winScreen").style.display="flex";
-}
-
-// RESIGN
-function resign(){
-  if(currentPlayer==="player"){
-    showWinner("Computer Wins 🤖");
-  } else {
-    showWinner("You Win 🎉");
-  }
-}
-
-// START
-function startGame(){
-  board.fill(null);
-  playerPieces=9;
-  aiPieces=9;
-  currentPlayer="player";
-  document.getElementById("winScreen").style.display="none";
-  drawBoard();
-}
-
 drawBoard();
-
 </script>
 
 </body>
