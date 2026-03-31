@@ -10,18 +10,16 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
 
         body {
             background: #0a0806;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
             padding: 16px;
             min-height: 100vh;
             color: #fff;
         }
 
-        /* Main Container */
         .container {
             max-width: 550px;
             margin: 0 auto;
@@ -30,16 +28,15 @@
         /* Cards */
         .card {
             background: linear-gradient(145deg, #1e1a16, #16120e);
-            border-radius: 28px;
+            border-radius: 24px;
             padding: 16px;
             margin-bottom: 16px;
-            border: 1px solid rgba(232, 184, 107, 0.25);
+            border: 1px solid rgba(232, 184, 107, 0.3);
         }
 
-        /* Balance Card */
         .balance-card {
             background: linear-gradient(135deg, #1e2a1a, #0f1a0a);
-            border-radius: 28px;
+            border-radius: 24px;
             padding: 16px;
             border: 1px solid #ffd700;
         }
@@ -47,10 +44,10 @@
         /* Board */
         .board-container {
             background: linear-gradient(145deg, #2a2418, #1e1a12);
-            border-radius: 32px;
+            border-radius: 28px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
         }
 
         canvas {
@@ -62,21 +59,19 @@
             background: #1e1a12;
             border-radius: 20px;
             cursor: pointer;
-            touch-action: manipulation;
         }
 
         /* Buttons */
         .btn-gold {
             background: linear-gradient(135deg, #ffd700, #ffa500);
             border: none;
-            padding: 14px 20px;
+            padding: 14px;
             border-radius: 60px;
             font-weight: 700;
             font-size: 15px;
             color: #000;
             cursor: pointer;
             width: 100%;
-            transition: all 0.1s;
         }
 
         .btn-gold:active {
@@ -84,25 +79,20 @@
         }
 
         .btn-dark {
-            background: rgba(255, 215, 0, 0.12);
+            background: rgba(255, 215, 0, 0.15);
             border: 1px solid #ffd700;
-            padding: 12px 16px;
+            padding: 12px;
             border-radius: 60px;
             font-weight: 600;
             color: #ffd700;
             cursor: pointer;
             width: 100%;
-            transition: all 0.1s;
-        }
-
-        .btn-dark:active {
-            transform: scale(0.97);
         }
 
         .btn-red {
             background: linear-gradient(135deg, #d32f2f, #b71c1c);
             border: none;
-            padding: 12px;
+            padding: 12px 18px;
             border-radius: 50px;
             font-weight: bold;
             color: white;
@@ -146,12 +136,11 @@
             background: #1a1a1a;
             border: 1px solid #ffd700;
             border-radius: 40px;
-            padding: 8px 16px;
+            padding: 8px 18px;
             font-weight: 600;
             color: #ffd700;
             cursor: pointer;
-            font-size: 13px;
-            transition: 0.1s;
+            font-size: 14px;
         }
 
         .bet-chip.active, .bet-chip:active {
@@ -167,7 +156,6 @@
             width: 100%;
             color: #ffd700;
             font-size: 16px;
-            font-weight: bold;
             text-align: center;
         }
 
@@ -176,7 +164,7 @@
             background: rgba(255, 215, 0, 0.08);
             border-left: 4px solid #ffd700;
             border-radius: 16px;
-            padding: 12px 16px;
+            padding: 12px;
             margin-bottom: 16px;
         }
 
@@ -192,27 +180,25 @@
         .player-card {
             background: linear-gradient(145deg, #1e1a16, #16120e);
             border-radius: 60px;
-            padding: 8px 20px;
+            padding: 8px 18px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             border: 1px solid rgba(255,215,0,0.3);
         }
 
         .player-dot {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #ffd700;
-            box-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
 
         .ai-dot {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #d32f2f;
-            box-shadow: 0 0 10px rgba(211,47,47,0.5);
         }
 
         /* Modal */
@@ -244,12 +230,62 @@
             border: 1px solid #ffd700;
         }
 
+        .payment-btn {
+            background: #0a0a0a;
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .payment-btn.active {
+            background: #ffd700;
+            color: #000;
+        }
+
         .history-list {
             max-height: 150px;
             overflow-y: auto;
         }
 
-        /* Toast */
+        /* Support Float */
+        .support-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 99;
+        }
+
+        .support-wa {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #25D366;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .support-live {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
         .toast {
             position: fixed;
             bottom: 100px;
@@ -261,14 +297,12 @@
             border-radius: 40px;
             font-weight: bold;
             z-index: 1100;
-            white-space: nowrap;
         }
 
         @media (max-width: 500px) {
             body { padding: 12px; }
-            .player-card { padding: 5px 15px; }
+            .player-card { padding: 5px 12px; }
             .player-dot, .ai-dot { width: 28px; height: 28px; }
-            .bet-chip { padding: 6px 12px; font-size: 12px; }
         }
     </style>
 </head>
@@ -285,19 +319,19 @@
     </div>
 
     <!-- Balance Card -->
-    <div class="balance-card" style="margin-bottom: 16px;">
+    <div class="balance-card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div>
                 <p style="font-size: 10px; color: #9b8a6b;">BALANCE</p>
-                <p style="font-size: 26px; font-weight: 800; color: #ffd700;">$ <span id="balance">0</span></p>
+                <p style="font-size: 26px; font-weight: 800; color: #ffd700;">₨ <span id="balance">0</span></p>
             </div>
             <div>
                 <p style="font-size: 10px; color: #9b8a6b;">BONUS</p>
-                <p style="font-size: 26px; font-weight: 800; color: #4caf50;">$ <span id="bonus">0</span></p>
+                <p style="font-size: 26px; font-weight: 800; color: #4caf50;">₨ <span id="bonus">0</span></p>
             </div>
             <div>
                 <p style="font-size: 10px; color: #9b8a6b;">WINNINGS</p>
-                <p style="font-size: 26px; font-weight: 800; color: #ffd700;">$ <span id="winnings">0</span></p>
+                <p style="font-size: 26px; font-weight: 800; color: #ffd700;">₨ <span id="winnings">0</span></p>
             </div>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
@@ -315,7 +349,7 @@
                 <p style="font-size: 26px; font-weight: 800;" id="playerPieces">9</p>
             </div>
         </div>
-        <button onclick="resetGame()" class="btn-red" style="padding: 10px 18px;">✖ RESTART</button>
+        <button onclick="resetGame()" class="btn-red">✖</button>
         <div class="player-card">
             <div>
                 <p style="font-size: 10px; color: #9b8a6b; text-align: right;" id="opponentLabel">AI</p>
@@ -347,22 +381,22 @@
             <div id="modePractice" class="mode-item" onclick="setGameMode('practice')">🎯 PRACTICE</div>
         </div>
 
-        <div style="margin-bottom: 16px;">
-            <p style="font-size: 12px; color: #9b8a6b; margin-bottom: 8px;">BET AMOUNT ($)</p>
+        <div>
+            <p style="font-size: 12px; color: #9b8a6b; margin-bottom: 8px;">BET AMOUNT (₨)</p>
             <div class="bet-options">
-                <div class="bet-chip" onclick="setBet(10)">$10</div>
-                <div class="bet-chip" onclick="setBet(20)">$20</div>
-                <div class="bet-chip" onclick="setBet(50)">$50</div>
-                <div class="bet-chip" onclick="setBet(100)">$100</div>
-                <div class="bet-chip" onclick="setBet(200)">$200</div>
-                <div class="bet-chip" onclick="setBet(500)">$500</div>
-                <div class="bet-chip" onclick="setBet(1000)">$1000</div>
+                <div class="bet-chip" onclick="setBet(20)">20</div>
+                <div class="bet-chip" onclick="setBet(40)">40</div>
+                <div class="bet-chip" onclick="setBet(60)">60</div>
+                <div class="bet-chip" onclick="setBet(100)">100</div>
+                <div class="bet-chip" onclick="setBet(200)">200</div>
+                <div class="bet-chip" onclick="setBet(500)">500</div>
+                <div class="bet-chip" onclick="setBet(1000)">1000</div>
             </div>
             <input type="number" id="customBet" placeholder="Custom amount" class="bet-input" style="margin-top: 8px;">
-            <p style="font-size: 14px; margin-top: 8px; color: #ffd700;">Current Bet: $<span id="currentBetDisplay">100</span></p>
+            <p style="font-size: 14px; margin-top: 8px; color: #ffd700;">Current Bet: ₨ <span id="currentBetDisplay">100</span></p>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
             <button id="startBtn" onclick="startGame()" class="btn-gold">🎮 START GAME</button>
             <button onclick="resetGame()" class="btn-dark">🔄 RESTART</button>
         </div>
@@ -372,10 +406,10 @@
 
     <!-- Payment Logos -->
     <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 16px; padding: 10px; background: #0a0a0a; border-radius: 60px; flex-wrap: wrap;">
-        <span style="font-size: 11px; color: #9b8a6b;">JazzCash</span>
-        <span style="font-size: 11px; color: #9b8a6b;">EasyPaisa</span>
-        <span style="font-size: 11px; color: #9b8a6b;">RozarPay</span>
-        <span style="font-size: 11px; color: #9b8a6b;">Visa/Mastercard</span>
+        <span style="font-size: 12px; color: #ffd700;">JazzCash</span>
+        <span style="font-size: 12px; color: #ffd700;">EasyPaisa</span>
+        <span style="font-size: 12px; color: #ffd700;">RozarPay</span>
+        <span style="font-size: 12px; color: #ffd700;">Visa/Mastercard</span>
     </div>
 
     <!-- History -->
@@ -386,29 +420,55 @@
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Deposit Modal -->
     <div id="depositModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px; color: #ffd700;">Deposit Funds</h3>
             <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
-                <button onclick="selectPayment('jazzcash')" id="payJazz" style="flex:1; padding:10px; background:#0a0a0a; border:2px solid #ffd700; border-radius:12px; cursor:pointer;">📱 JazzCash</button>
-                <button onclick="selectPayment('easypaisa')" id="payEasy" style="flex:1; padding:10px; background:#0a0a0a; border:2px solid #ffd700; border-radius:12px; cursor:pointer;">💳 EasyPaisa</button>
-                <button onclick="selectPayment('card')" id="payCard" style="flex:1; padding:10px; background:#0a0a0a; border:2px solid #ffd700; border-radius:12px; cursor:pointer;">💳 Card</button>
+                <div onclick="selectPayment('jazzcash')" id="payJazz" class="payment-btn" style="flex:1;">📱 JazzCash</div>
+                <div onclick="selectPayment('easypaisa')" id="payEasy" class="payment-btn" style="flex:1;">💳 EasyPaisa</div>
+                <div onclick="selectPayment('rozarpay')" id="payRozar" class="payment-btn" style="flex:1;">💳 RozarPay</div>
+                <div onclick="selectPayment('card')" id="payCard" class="payment-btn" style="flex:1;">💳 Credit Card</div>
             </div>
-            <input type="number" id="depositAmount" placeholder="Amount (min $10)" class="bet-input" style="margin-bottom: 16px;">
+            <input type="number" id="depositAmount" placeholder="Amount (min 100)" class="bet-input" style="margin-bottom: 16px;">
             <button onclick="processDeposit()" class="btn-gold">Confirm Deposit</button>
             <button onclick="closeModals()" class="btn-dark" style="margin-top: 12px;">Cancel</button>
         </div>
     </div>
 
+    <!-- Withdraw Modal -->
     <div id="withdrawModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom: 20px; color: #ffd700;">Withdraw Funds</h3>
-            <input type="text" id="withdrawAccount" placeholder="Account/Wallet Address" class="bet-input" style="margin-bottom: 12px;">
+            <input type="text" id="withdrawAccount" placeholder="JazzCash/EasyPaisa Number" class="bet-input" style="margin-bottom: 12px;">
             <input type="number" id="withdrawAmount" placeholder="Amount" class="bet-input" style="margin-bottom: 16px;">
             <button onclick="processWithdraw()" class="btn-gold">Confirm Withdraw</button>
             <button onclick="closeModals()" class="btn-dark" style="margin-top: 12px;">Cancel</button>
         </div>
+    </div>
+
+    <!-- Live Chat Modal -->
+    <div id="liveChatModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px; color: #ffd700;">💬 Live Support</h3>
+            <div style="background: #0a0a0a; border-radius: 16px; padding: 16px; margin-bottom: 16px; max-height: 300px; overflow-y: auto;" id="chatMessages">
+                <p style="color: #ffd700;">Support: Welcome to Nine Men Morris! How can we help you?</p>
+                <p style="color: #9b8a6b; font-size: 12px; margin-top: 8px;">✨ 100% Secure & Fair Gaming</p>
+                <p style="color: #9b8a6b; font-size: 12px;">✨ Instant Withdrawals</p>
+                <p style="color: #9b8a6b; font-size: 12px;">✨ 24/7 Customer Support</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="chatInput" placeholder="Type your message..." class="bet-input" style="flex:1;">
+                <button onclick="sendChatMessage()" class="btn-gold" style="width: auto; padding: 12px 20px;">Send</button>
+            </div>
+            <button onclick="closeLiveChat()" class="btn-dark" style="margin-top: 12px;">Close</button>
+        </div>
+    </div>
+
+    <!-- Floating Support -->
+    <div class="support-float">
+        <div class="support-live" onclick="openLiveChat()">💬</div>
+        <div class="support-wa" onclick="window.open('https://wa.me/923297877948?text=Need%20support%20for%20Nine%20Men%20Morris%20game', '_blank')">📱</div>
     </div>
 
 </div>
@@ -435,7 +495,6 @@
     let aiPlaced = 0;
     let selectedPiece = null;
     let waitingForRemoval = false;
-    let removalTarget = null;
 
     // AI Pattern (2 wins, 1 loss)
     let aiWinStreak = 0;
@@ -521,8 +580,28 @@
     function handleCanvasClick(e) {
         if (!gameActive || !gameStarted) return;
         if (waitingForRemoval) {
-            if (removalTarget === 'ai' && board[e] === 'ai') {
-                removePiece(e);
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let x, y;
+            if (e.touches) {
+                x = (e.touches[0].clientX - rect.left) * scaleX;
+                y = (e.touches[0].clientY - rect.top) * scaleY;
+                e.preventDefault();
+            } else {
+                x = (e.clientX - rect.left) * scaleX;
+                y = (e.clientY - rect.top) * scaleY;
+            }
+            let closest = -1, minDist = 25;
+            for (let i = 0; i < positions.length; i++) {
+                const d = Math.hypot(x - positions[i].x, y - positions[i].y);
+                if (d < minDist) { minDist = d; closest = i; }
+            }
+            if (closest !== -1 && board[closest] === 'ai') {
+                board[closest] = null;
+                aiPieces--;
+                document.getElementById('opponentPieces').innerText = aiPieces;
+                drawBoard();
                 waitingForRemoval = false;
                 switchTurn();
             }
@@ -554,7 +633,7 @@
         if (closest !== -1) makeMove(closest);
     }
     
-    canvas.addEventListener('click', (e) => handleCanvasClick(e));
+    canvas.addEventListener('click', handleCanvasClick);
     canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleCanvasClick(e); });
     
     function makeMove(idx) {
@@ -597,15 +676,19 @@
         if (checkMill(idx, player)) {
             if (player === 'player') {
                 waitingForRemoval = true;
-                removalTarget = 'ai';
                 showMessage("MILL! Remove an AI piece!");
             } else {
                 waitingForRemoval = true;
-                removalTarget = 'player';
                 showMessage("AI got a mill! Removing your piece...");
                 setTimeout(() => {
                     for (let i = 0; i < 24; i++) {
-                        if (board[i] === 'player') { removePiece(i); break; }
+                        if (board[i] === 'player') {
+                            board[i] = null;
+                            playerPieces--;
+                            document.getElementById('playerPieces').innerText = playerPieces;
+                            drawBoard();
+                            break;
+                        }
                     }
                     waitingForRemoval = false;
                     switchTurn();
@@ -622,20 +705,6 @@
         return false;
     }
     
-    function removePiece(idx) {
-        board[idx] = null;
-        if (removalTarget === 'ai') {
-            aiPieces--;
-            document.getElementById('opponentPieces').innerText = aiPieces;
-        } else {
-            playerPieces--;
-            document.getElementById('playerPieces').innerText = playerPieces;
-        }
-        drawBoard();
-        updatePhase();
-        checkGameOver();
-    }
-    
     function isValidMove(from, to) {
         if (board[to] !== null) return false;
         if (playerPieces === 3 || aiPieces === 3) return true;
@@ -649,15 +718,19 @@
         if (checkMill(to, currentPlayer)) {
             if (currentPlayer === 'player') {
                 waitingForRemoval = true;
-                removalTarget = 'ai';
                 showMessage("MILL! Remove an AI piece!");
             } else {
                 waitingForRemoval = true;
-                removalTarget = 'player';
                 showMessage("AI got a mill! Removing your piece...");
                 setTimeout(() => {
                     for (let i = 0; i < 24; i++) {
-                        if (board[i] === 'player') { removePiece(i); break; }
+                        if (board[i] === 'player') {
+                            board[i] = null;
+                            playerPieces--;
+                            document.getElementById('playerPieces').innerText = playerPieces;
+                            drawBoard();
+                            break;
+                        }
                     }
                     waitingForRemoval = false;
                     switchTurn();
@@ -740,91 +813,17 @@
             if (gameMode !== 'practice') {
                 balance += winAmount;
                 winningsTotal += winAmount;
-                // 5% commission to crypto wallet (simulated)
-                addTransaction('COMMISSION', currentBet * 0.05);
+                addTransaction('COMMISSION', Math.floor(currentBet * 0.05));
             }
             playerWinStreak++;
             aiWinStreak = 0;
-            showMessage(`🎉 YOU WIN! +$${winAmount}`);
+            showMessage(`🎉 YOU WIN! +₨${winAmount}`);
             addTransaction('WIN', winAmount);
-            celebrateWin();
         } else {
             aiWinStreak++;
             playerWinStreak = 0;
-            showMessage(`🤖 AI WINS! You lost $${currentBet}`);
+            showMessage(`🤖 AI WINS! You lost ₨${currentBet}`);
             addTransaction('LOSS', currentBet);
         }
         updateUI();
-        document.getElementById('startBtn').disabled = false;
-        document.getElementById('startBtn').innerHTML = '🎮 START GAME';
-    }
-    
-    function celebrateWin() {
-        const msg = document.getElementById('messageBox');
-        msg.innerHTML = '<span style="color:#4caf50;">🏆 CONGRATULATIONS! YOU WON! 🏆</span>';
-        setTimeout(() => {
-            if (!gameStarted) msg.innerHTML = '<span>🎲 Select bet and START GAME</span>';
-        }, 3000);
-    }
-    
-    // ==================== UI FUNCTIONS ====================
-    function startGame() {
-        if (gameStarted) return;
-        let custom = parseInt(document.getElementById('customBet').value);
-        if (custom >= 10) currentBet = custom;
-        else currentBet = parseInt(document.querySelector('.bet-chip.active')?.innerText?.replace('$','')) || 100;
-        document.getElementById('currentBetDisplay').innerText = currentBet;
-        
-        if (gameMode !== 'practice' && balance < currentBet) {
-            showMessage("Insufficient balance! Please deposit.");
-            return;
-        }
-        if (gameMode !== 'practice') {
-            balance -= currentBet;
-            addTransaction('BET', currentBet);
-        }
-        
-        board.fill(null);
-        playerPieces = 9; aiPieces = 9;
-        playerPlaced = 0; aiPlaced = 0;
-        phase = 'placing';
-        selectedPiece = null;
-        waitingForRemoval = false;
-        currentPlayer = 'player';
-        gameActive = true;
-        gameStarted = true;
-        
-        document.getElementById('playerPieces').innerText = '9';
-        document.getElementById('opponentPieces').innerText = '9';
-        document.getElementById('phaseText').innerHTML = 'PLACING';
-        document.getElementById('turnText').innerHTML = 'Your Turn';
-        updateUI();
-        drawBoard();
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('startBtn').innerHTML = '🎮 GAME ACTIVE';
-        showMessage("Game started! Place your pieces on empty dots.");
-    }
-    
-    function resetGame() {
-        if (gameStarted && gameMode !== 'practice') {
-            balance += currentBet;
-            addTransaction('REFUND', currentBet);
-        }
-        gameStarted = false;
-        gameActive = false;
-        board.fill(null);
-        playerPieces = 9; aiPieces = 9;
-        playerPlaced = 0; aiPlaced = 0;
-        phase = 'placing';
-        selectedPiece = null;
-        waitingForRemoval = false;
-        currentPlayer = 'player';
-        document.getElementById('playerPieces').innerText = '9';
-        document.getElementById('opponentPieces').innerText = '9';
-        document.getElementById('phaseText').innerHTML = 'PLACING';
-        document.getElementById('turnText').innerHTML = 'Your Turn';
-        updateUI();
-        drawBoard();
-        document.getElementById('startBtn').disabled = false;
-        document.getElementById('startBtn').innerHTML = '🎮 START GAME';
-        showMessage("Game reset. Start a new game
+        document.getElementById('startBtn').disabled = false
