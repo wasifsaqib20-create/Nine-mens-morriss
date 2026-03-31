@@ -3,5 +3,31 @@
 <h1>NINE MEN MORRIS</h1>
 
 <div id="board"></div>
+<script>
+const board = document.getElementById("board");
 
+const points = [
+  [10,10],[50,10],[90,10],
+  [20,20],[50,20],[80,20],
+  [30,30],[50,30],[70,30],
+  [10,50],[20,50],[30,50],[70,50],[80,50],[90,50],
+  [30,70],[50,70],[70,70],
+  [20,80],[50,80],[80,80],
+  [10,90],[50,90],[90,90]
+];
+
+points.forEach(p => {
+  let dot = document.createElement("div");
+  dot.style.position = "absolute";
+  dot.style.width = "10px";
+  dot.style.height = "10px";
+  dot.style.background = "blue";
+  dot.style.borderRadius = "50%";
+  dot.style.left = p[0] + "%";
+  dot.style.top = p[1] + "%";
+  dot.style.transform = "translate(-50%, -50%)";
+
+  board.appendChild(dot);
+});
+</script>
 </body>
