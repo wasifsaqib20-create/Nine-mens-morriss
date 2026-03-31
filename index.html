@@ -2,79 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Nine Men Morris Pro | Gambling Arena</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nine Men Morris - Professional Gaming</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
+
         body {
             background: #0a0806;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
             padding: 16px;
             min-height: 100vh;
             color: #fff;
         }
+
         .container {
             max-width: 550px;
             margin: 0 auto;
         }
+
         .card {
             background: linear-gradient(145deg, #1e1a16, #16120e);
-            border-radius: 28px;
+            border-radius: 24px;
             padding: 16px;
             margin-bottom: 16px;
-            border: 1px solid rgba(255,215,0,0.25);
+            border: 1px solid rgba(255,215,0,0.3);
         }
+
         .balance-card {
             background: linear-gradient(135deg, #1e2a1a, #0f1a0a);
-            border-radius: 28px;
-            padding: 18px;
-            border: 1px solid #FFD700;
+            border-radius: 24px;
+            padding: 16px;
+            border: 1px solid #ffd700;
             margin-bottom: 16px;
         }
+
         .board-container {
             background: linear-gradient(145deg, #2a2418, #1e1a12);
-            border-radius: 32px;
+            border-radius: 28px;
             padding: 20px;
             margin-bottom: 20px;
+            text-align: center;
         }
+
         canvas {
             display: block;
             margin: 0 auto;
             width: 100%;
             height: auto;
-            max-width: 450px;
+            max-width: 400px;
             background: #1e1a12;
             border-radius: 20px;
             cursor: pointer;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
         }
+
         .btn-gold {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
+            background: linear-gradient(135deg, #ffd700, #ffa500);
             border: none;
             padding: 12px;
             border-radius: 60px;
-            font-weight: bold;
+            font-weight: 700;
             color: #000;
             cursor: pointer;
             width: 100%;
         }
+
         .btn-dark {
             background: rgba(255,215,0,0.15);
-            border: 1px solid #FFD700;
+            border: 1px solid #ffd700;
             padding: 10px;
             border-radius: 60px;
             font-weight: 600;
-            color: #FFD700;
+            color: #ffd700;
             cursor: pointer;
             width: 100%;
         }
+
         .btn-green {
-            background: linear-gradient(135deg, #2E7D32, #1b5e20);
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
             border: none;
             padding: 12px;
             border-radius: 60px;
@@ -82,6 +92,7 @@
             color: white;
             cursor: pointer;
         }
+
         .mode-group {
             display: flex;
             gap: 10px;
@@ -90,6 +101,7 @@
             border-radius: 60px;
             margin-bottom: 16px;
         }
+
         .mode-item {
             flex: 1;
             padding: 10px;
@@ -98,52 +110,60 @@
             font-weight: 600;
             cursor: pointer;
         }
+
         .mode-item.active {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
+            background: linear-gradient(135deg, #ffd700, #ffa500);
             color: #000;
         }
+
         .bet-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin: 10px 0;
         }
+
         .bet-chip {
             background: #1a1a1a;
-            border: 1px solid #FFD700;
+            border: 1px solid #ffd700;
             border-radius: 40px;
             padding: 6px 14px;
             font-weight: 600;
-            color: #FFD700;
+            color: #ffd700;
             cursor: pointer;
             font-size: 13px;
         }
+
         .bet-chip.active {
-            background: #FFD700;
+            background: #ffd700;
             color: #000;
         }
+
         .bet-input {
             background: #0a0a0a;
-            border: 1px solid #FFD700;
+            border: 1px solid #ffd700;
             border-radius: 12px;
             padding: 10px;
             width: 100%;
-            color: #FFD700;
+            color: #ffd700;
             text-align: center;
         }
+
         .status-bar {
             background: rgba(255,215,0,0.08);
-            border-left: 4px solid #FFD700;
+            border-left: 4px solid #ffd700;
             border-radius: 12px;
             padding: 10px;
             margin-bottom: 12px;
         }
+
         .side-panel {
             display: flex;
             justify-content: space-between;
             margin-bottom: 16px;
             gap: 12px;
         }
+
         .player-badge {
             background: linear-gradient(145deg, #1e1a16, #16120e);
             border-radius: 60px;
@@ -153,18 +173,21 @@
             gap: 10px;
             border: 1px solid rgba(255,215,0,0.3);
         }
+
         .player-dot {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #FFD700;
+            background: #ffd700;
         }
+
         .ai-dot {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #D32F2F;
+            background: #d32f2f;
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -179,31 +202,36 @@
             align-items: center;
             padding: 20px;
         }
+
         .modal.active {
             display: flex;
         }
+
         .modal-content {
             background: #1e1a16;
             border-radius: 28px;
             padding: 20px;
-            max-width: 380px;
+            max-width: 350px;
             width: 100%;
-            border: 1px solid #FFD700;
+            border: 1px solid #ffd700;
         }
+
         .payment-option {
             background: #0a0a0a;
-            border: 1px solid #FFD700;
+            border: 1px solid #ffd700;
             border-radius: 12px;
             padding: 10px;
             text-align: center;
             cursor: pointer;
         }
+
         .support-float {
             position: fixed;
             bottom: 20px;
             right: 20px;
             z-index: 99;
         }
+
         .support-wa {
             width: 55px;
             height: 55px;
@@ -214,14 +242,16 @@
             justify-content: center;
             font-size: 28px;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
+
         .history-list {
             max-height: 150px;
             overflow-y: auto;
         }
+
         @media (max-width: 500px) {
             .player-dot, .ai-dot { width: 28px; height: 28px; }
-            .player-badge { padding: 4px 12px; }
         }
     </style>
 </head>
@@ -231,7 +261,7 @@
     <!-- HEADER -->
     <div style="text-align: center; margin-bottom: 16px;">
         <h1 style="font-size: 28px; font-weight: 800;">
-            <span style="color: #FFD700;">NINE MEN</span>
+            <span style="color: #ffd700;">NINE MEN</span>
             <span style="color: #fff;"> MORRIS</span>
         </h1>
         <p style="font-size: 10px; color: #6b5a3e;">PROFESSIONAL GAMBLING ARENA | 50% AI WIN RATE</p>
@@ -242,15 +272,15 @@
         <div style="display: flex; justify-content: space-between; gap: 12px;">
             <div>
                 <p style="font-size: 10px; color: #9b8a6b;">BALANCE</p>
-                <p style="font-size: 24px; font-weight: 800; color: #FFD700;">Rs <span id="balance">0</span></p>
+                <p style="font-size: 24px; font-weight: 800; color: #ffd700;">Rs <span id="balance">0</span></p>
             </div>
             <div>
                 <p style="font-size: 10px; color: #9b8a6b;">WINNINGS</p>
-                <p style="font-size: 24px; font-weight: 800; color: #FFD700;">Rs <span id="winnings">0</span></p>
+                <p style="font-size: 24px; font-weight: 800; color: #ffd700;">Rs <span id="winnings">0</span></p>
             </div>
             <div>
                 <p style="font-size: 10px; color: #9b8a6b;">GAMES</p>
-                <p style="font-size: 24px; font-weight: 800; color: #FFD700;"><span id="gamesCount">0</span></p>
+                <p style="font-size: 24px; font-weight: 800; color: #ffd700;"><span id="gamesCount">0</span></p>
             </div>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
@@ -279,13 +309,13 @@
 
     <!-- GAME BOARD -->
     <div class="board-container">
-        <canvas id="gameCanvas" width="450" height="450" style="width: 100%; height: auto; max-width: 450px; margin: 0 auto; display: block;"></canvas>
+        <canvas id="gameCanvas" width="400" height="400" style="width: 100%; height: auto; max-width: 400px; margin: 0 auto; display: block;"></canvas>
     </div>
 
     <!-- STATUS -->
     <div class="status-bar" style="display: flex; justify-content: space-between;">
-        <span>🎯 PHASE: <strong id="phaseText" style="color:#FFD700;">PLACING</strong></span>
-        <span>⏳ TURN: <strong id="turnText" style="color:#FFD700;">Your Turn</strong></span>
+        <span>🎯 PHASE: <strong id="phaseText" style="color:#ffd700;">PLACING</strong></span>
+        <span>⏳ TURN: <strong id="turnText" style="color:#ffd700;">Your Turn</strong></span>
     </div>
     <div id="messageBox" class="status-bar" style="text-align: center;">
         <span>🎲 Select bet and START GAME</span>
@@ -301,13 +331,13 @@
         <div>
             <p style="font-size: 12px;">BET AMOUNT (Rs)</p>
             <div class="bet-grid">
-                <div class="bet-chip" onclick="setBet(20)">20</div>
-                <div class="bet-chip" onclick="setBet(40)">40</div>
-                <div class="bet-chip" onclick="setBet(60)">60</div>
-                <div class="bet-chip" onclick="setBet(100)">100</div>
-                <div class="bet-chip" onclick="setBet(200)">200</div>
-                <div class="bet-chip" onclick="setBet(500)">500</div>
-                <div class="bet-chip" onclick="setBet(1000)">1000</div>
+                <div class="bet-chip" onclick="setBet(20, this)">20</div>
+                <div class="bet-chip" onclick="setBet(40, this)">40</div>
+                <div class="bet-chip" onclick="setBet(60, this)">60</div>
+                <div class="bet-chip" onclick="setBet(100, this)">100</div>
+                <div class="bet-chip" onclick="setBet(200, this)">200</div>
+                <div class="bet-chip" onclick="setBet(500, this)">500</div>
+                <div class="bet-chip" onclick="setBet(1000, this)">1000</div>
             </div>
             <input type="number" id="customBet" placeholder="Custom amount" class="bet-input">
             <p style="margin-top: 8px;">Current Bet: Rs <span id="currentBetDisplay">100</span></p>
@@ -324,7 +354,7 @@
     </div>
 
     <!-- PAYMENT LOGOS -->
-    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 16px; padding: 10px; background: #0a0a0a; border-radius: 60px;">
+    <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 16px; padding: 10px; background: #0a0a0a; border-radius: 60px; flex-wrap: wrap;">
         <span style="color: white;">JazzCash</span>
         <span style="color: white;">EasyPaisa</span>
         <span style="color: white;">RozarPay</span>
@@ -368,9 +398,9 @@
         <div class="modal-content" style="text-align: center;">
             <h3>🎡 SPIN WHEEL</h3>
             <div style="margin: 20px 0;">
-                <div id="spinResult" style="font-size: 24px; font-weight: bold; color: #FFD700;">Click SPIN</div>
+                <div id="spinResult" style="font-size: 28px; font-weight: bold; color: #ffd700;">Click SPIN</div>
             </div>
-            <button onclick="spinWheel()" class="btn-gold">SPIN</button>
+            <button onclick="spinWheel()" class="btn-gold">SPIN NOW</button>
             <button onclick="closeSpinModal()" class="btn-dark" style="margin-top: 8px;">Close</button>
         </div>
     </div>
@@ -402,19 +432,18 @@
     let selectedPiece = null;
     let waitingForRemoval = false;
 
-    // AI Stats
     let aiWinStreak = 0;
     let playerWinStreak = 0;
 
-    // ==================== BOARD POSITIONS ====================
+    // ==================== BOARD POSITIONS (24 Points) ====================
     const positions = [
-        {x: 60, y: 60}, {x: 225, y: 60}, {x: 390, y: 60},
-        {x: 100, y: 100}, {x: 225, y: 100}, {x: 350, y: 100},
-        {x: 140, y: 140}, {x: 225, y: 140}, {x: 310, y: 140},
-        {x: 60, y: 225}, {x: 140, y: 225}, {x: 225, y: 225}, {x: 310, y: 225}, {x: 390, y: 225},
-        {x: 140, y: 310}, {x: 225, y: 310}, {x: 310, y: 310},
-        {x: 100, y: 350}, {x: 225, y: 350}, {x: 350, y: 350},
-        {x: 60, y: 390}, {x: 225, y: 390}, {x: 390, y: 390}
+        {x: 50, y: 50}, {x: 200, y: 50}, {x: 350, y: 50},
+        {x: 85, y: 85}, {x: 200, y: 85}, {x: 315, y: 85},
+        {x: 120, y: 120}, {x: 200, y: 120}, {x: 280, y: 120},
+        {x: 50, y: 200}, {x: 120, y: 200}, {x: 200, y: 200}, {x: 280, y: 200}, {x: 350, y: 200},
+        {x: 120, y: 280}, {x: 200, y: 280}, {x: 280, y: 280},
+        {x: 85, y: 315}, {x: 200, y: 315}, {x: 315, y: 315},
+        {x: 50, y: 350}, {x: 200, y: 350}, {x: 350, y: 350}
     ];
 
     const adjacents = {
@@ -435,42 +464,50 @@
 
     // ==================== DRAW BOARD ====================
     function drawBoard() {
-        ctx.clearRect(0, 0, 450, 450);
+        ctx.clearRect(0, 0, 400, 400);
+        
+        // Draw lines
         ctx.strokeStyle = '#B8860B';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(60, 60, 330, 330);
-        ctx.strokeRect(100, 100, 250, 250);
-        ctx.strokeRect(140, 140, 170, 170);
+        ctx.lineWidth = 2.5;
         
+        // Outer square
+        ctx.strokeRect(50, 50, 300, 300);
+        // Middle square
+        ctx.strokeRect(85, 85, 230, 230);
+        // Inner square
+        ctx.strokeRect(120, 120, 160, 160);
+        
+        // Cross lines
         ctx.beginPath();
-        ctx.moveTo(60, 225); ctx.lineTo(140, 225); ctx.stroke();
-        ctx.moveTo(310, 225); ctx.lineTo(390, 225); ctx.stroke();
-        ctx.moveTo(225, 60); ctx.lineTo(225, 140); ctx.stroke();
-        ctx.moveTo(225, 310); ctx.lineTo(225, 390); ctx.stroke();
+        ctx.moveTo(50, 200); ctx.lineTo(120, 200); ctx.stroke();
+        ctx.moveTo(280, 200); ctx.lineTo(350, 200); ctx.stroke();
+        ctx.moveTo(200, 50); ctx.lineTo(200, 120); ctx.stroke();
+        ctx.moveTo(200, 280); ctx.lineTo(200, 350); ctx.stroke();
         
+        // Draw all positions and pieces
         for (let i = 0; i < positions.length; i++) {
             const p = positions[i];
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 15, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y, 12, 0, Math.PI * 2);
             
             if (board[i] === 'player') {
                 ctx.fillStyle = '#FFD700';
                 ctx.fill();
                 ctx.fillStyle = '#000';
-                ctx.font = 'bold 16px Arial';
-                ctx.fillText('●', p.x - 7, p.y + 6);
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('●', p.x - 5, p.y + 5);
             } else if (board[i] === 'ai') {
                 ctx.fillStyle = '#D32F2F';
                 ctx.fill();
                 ctx.fillStyle = '#fff';
-                ctx.font = 'bold 16px Arial';
-                ctx.fillText('○', p.x - 6, p.y + 6);
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('○', p.x - 4, p.y + 5);
             } else {
                 ctx.fillStyle = '#4A3A2A';
                 ctx.fill();
                 ctx.fillStyle = '#6B5A3E';
                 ctx.font = '12px Arial';
-                ctx.fillText('•', p.x - 2, p.y + 4);
+                ctx.fillText('•', p.x - 2, p.y + 3);
             }
         }
     }
@@ -511,7 +548,7 @@
             x = (e.clientX - rect.left) * scaleX;
             y = (e.clientY - rect.top) * scaleY;
         }
-        let closest = -1, minD = 22;
+        let closest = -1, minD = 20;
         for (let i = 0; i < positions.length; i++) {
             let d = Math.hypot(x - positions[i].x, y - positions[i].y);
             if (d < minD) { minD = d; closest = i; }
@@ -657,7 +694,7 @@
             if (isValidMove(idx, i)) {
                 let p = positions[i];
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 22, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, 18, 0, Math.PI * 2);
                 ctx.fillStyle = 'rgba(255,215,0,0.3)';
                 ctx.fill();
             }
@@ -690,8 +727,7 @@
     function aiMove() {
         if (!gameActive || !gameStarted || waitingForRemoval) return;
         
-        // 50% win, 50% loss pattern
-        let shouldLose = (playerWinStreak >= 1 && aiWinStreak < 1) || Math.random() < 0.5;
+        let shouldLose = Math.random() < 0.5;
         
         if (phase === 'placing' && aiPlaced < 9) {
             let empty = [];
@@ -732,13 +768,9 @@
                 balance += winAmt;
                 winnings += winAmt;
             }
-            playerWinStreak++;
-            aiWinStreak = 0;
             showMsg(`🎉 YOU WIN! +Rs ${winAmt}`);
             addTrans('WIN', winAmt);
         } else {
-            aiWinStreak++;
-            playerWinStreak = 0;
             showMsg(`🤖 AI WINS! You lost Rs ${currentBet}`);
             addTrans('LOSS', currentBet);
         }
@@ -815,11 +847,11 @@
         document.getElementById('modePractice').className = mode === 'practice' ? 'mode-item active' : 'mode-item';
     }
     
-    function setBet(amt) {
+    function setBet(amt, el) {
         currentBet = amt;
         document.getElementById('currentBetDisplay').innerText = currentBet;
         document.querySelectorAll('.bet-chip').forEach(c => c.classList.remove('active'));
-        event.target.classList.add('active');
+        el.classList.add('active');
     }
     
     function showMsg(msg) {
@@ -834,5 +866,5 @@
         let hist = document.getElementById('historyList');
         let time = new Date().toLocaleTimeString();
         let color = type === 'WIN' ? '#4CAF50' : (type === 'LOSS' ? '#D32F2F' : '#FFD700');
-        let html = `<div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #2a2418;">
-            <span>${type}</span><span style="color:
+        let html = `<div style="display:flex; justify-content:space-between; padding:6px
+    
