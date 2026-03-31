@@ -1,102 +1,56 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html>
 <head>
-  <title>Nine Mens Game</title>  <style>
+  <title>Nine Mens Game</title>
+  <style>
     body {
-      background: #0b0f1a;
-      color: white;
-      text-align: center;
-      font-family: Arial;
+      background:#0b132b;
+      color:white;
+      text-align:center;
+      font-family:sans-serif;
     }
 
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 20px;
-    }
-
-    .board {
-      display: grid;
-      grid-template-columns: repeat(7, 70px);
-      gap: 8px;
-      justify-content: center;
-      margin-top: 20px;
+    #board {
+      display:grid;
+      grid-template-columns: repeat(7,50px);
+      gap:10px;
+      justify-content:center;
+      margin-top:20px;
     }
 
     .cell {
-      width: 70px;
-      height: 70px;
-      background: #1f2a44;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: bold;
+      width:50px;
+      height:50px;
+      background:#1c2541;
+      border-radius:10px;
+      cursor:pointer;
     }
 
-    .player1 {
-      color: red;
-    }
-
-    .player2 {
-      color: cyan;
-    }
+    .player { background:lime; }
+    .ai { background:red; }
 
     button {
-      background: red;
-      border: none;
-      padding: 10px 15px;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
+      padding:8px 15px;
+      margin:10px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
     }
-  </style></head><body><div class="top-bar">
-  <div>Turn: <span id="turn">Player 1</span></div>
-  <button onclick="restartGame()">X Restart</button>
-</div><h2>Nine Mens Game</h2><div class="board" id="board"></div><script>
-let board = document.getElementById("board");
-let cells = [];
-let currentPlayer = 1;
 
-// create board
-for (let i = 0; i < 49; i++) {
-  let cell = document.createElement("div");
-  cell.classList.add("cell");
-  cell.dataset.index = i;
+    #restart { background:red; color:white; }
+  </style>
+</head>
 
-  cell.onclick = () => handleMove(cell);
+<body>
 
-  board.appendChild(cell);
-  cells.push(cell);
-}
+<h2>Nine Mens Game</h2>
+<p id="turn">Turn: Player</p>
+<p>Balance: <span id="balance">1000</span></p>
 
-// handle move
-function handleMove(cell) {
-  if (cell.innerHTML !== "") return;
+<button id="restart">Restart</button>
 
-  if (currentPlayer === 1) {
-    cell.innerHTML = "●";
-    cell.classList.add("player1");
-    currentPlayer = 2;
-    document.getElementById("turn").innerText = "Player 2";
-  } else {
-    cell.innerHTML = "●";
-    cell.classList.add("player2");
-    currentPlayer = 1;
-    document.getElementById("turn").innerText = "Player 1";
-  }
-}
+<div id="board"></div>
 
-// restart game
-function restartGame() {
-  cells.forEach(cell => {
-    cell.innerHTML = "";
-    cell.classList.remove("player1", "player2");
-  });
-
-  currentPlayer = 1;
-  document.getElementById("turn").innerText = "Player 1";
-}
-</script></body>
+<script src="index.js"></script>
+</body>
 </html>
