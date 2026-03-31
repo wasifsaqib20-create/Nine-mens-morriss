@@ -12,7 +12,7 @@ body {
   color:white;
   text-align:center;
   font-family:Arial;
-  touch-action: manipulation; /* zoom fix */
+  touch-action: manipulation;
 }
 
 h1 { color: gold; }
@@ -26,12 +26,32 @@ canvas {
 }
 
 button {
-  margin-top:20px;
-  padding:12px 30px;
+  margin-top:15px;
+  padding:10px 25px;
   border:none;
   background:gold;
   border-radius:20px;
   font-weight:bold;
+  cursor:pointer;
+}
+
+#backBtn {
+  background:#ff4444;
+  font-size:12px;
+  padding:6px 15px;
+}
+
+#winScreen {
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.9);
+  color:white;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  font-size:30px;
 }
 </style>
 </head>
@@ -39,11 +59,19 @@ button {
 <body>
 
 <h1>NINE MEN MORRIS</h1>
-<h3 id="status">Press Start</h3>
+<h3 id="status">Press Connect Game</h3>
 
 <canvas id="board" width="400" height="400"></canvas>
 <br>
-<button onclick="startGame()">START GAME</button>
+
+<button onclick="startGame()">CONNECT GAME</button>
+<br>
+<button id="backBtn" onclick="resign()">BACK</button>
+
+<div id="winScreen">
+  <h1 id="winnerText"></h1>
+  <button onclick="startGame()">PLAY AGAIN</button>
+</div>
 
 <script>
 
@@ -51,12 +79,8 @@ const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
 let currentPlayer = "player";
-let phase = "placing";
-
 let playerPieces = 9;
 let aiPieces = 9;
-
-let selected = null;
 
 const points = [
   [50,50],[200,50],[350,50],
@@ -89,8 +113,8 @@ function drawBoard(){
 
   points.forEach((p,i)=>{
     ctx.beginPath();
-    ctx.arc(p[0],p[1],12,0,Math.PI*2); // bigger points
-    ctx.fillStyle = "#222";
+    ctx.arc(p[0],p[1],6,0,Math.PI*2);
+    ctx.fillStyle = board[i] ? "#222" : "#00aaff"; // 🔵 empty blue
     ctx.fill();
 
     if(board[i]){
@@ -101,23 +125,13 @@ function drawBoard(){
 
 function drawPiece(x,y,type,scale=1){
   ctx.beginPath();
-  ctx.arc(x,y,15*scale,0,Math.PI*2);
+  ctx.arc(x,y,14*scale,0,Math.PI*2);
   ctx.fillStyle = type==="player"?"white":"black";
   ctx.fill();
 }
 
-function drawSquare(x,y,s){ ctx.strokeRect(x,y,s,s); }
-function drawLine(x1,y1,x2,y2){
-  ctx.beginPath();
-  ctx.moveTo(x1,y1);
-  ctx.lineTo(x2,y2);
-  ctx.stroke();
-}
-
-// CLICK FIX (NO ZOOM + ACCURATE)
+// CLICK
 canvas.addEventListener("click",(e)=>{
-  e.preventDefault();
-
   if(currentPlayer!=="player") return;
 
   const rect = canvas.getBoundingClientRect();
@@ -130,25 +144,22 @@ canvas.addEventListener("click",(e)=>{
   let clicked = getPoint(x,y);
   if(clicked===null) return;
 
-  if(phase==="placing"){
-    if(board[clicked]===null){
-      animatePlace(clicked,"player");
-    }
+  if(board[clicked]===null && playerPieces>0){
+    animatePlace(clicked,"player");
   }
-
-  drawBoard();
 });
 
+// FIND POINT
 function getPoint(x,y){
   for(let i=0;i<points.length;i++){
     let dx = x - points[i][0];
     let dy = y - points[i][1];
-    if(Math.sqrt(dx*dx+dy*dy)<20) return i; // easier click
+    if(Math.sqrt(dx*dx+dy*dy)<18) return i;
   }
   return null;
 }
 
-// 🐢 SMOOTH ANIMATION
+// ANIMATION
 function animatePlace(index, player){
   let scale = 0;
 
@@ -162,10 +173,10 @@ function animatePlace(index, player){
     } else {
       board[index] = player;
       playerPieces--;
+      checkWin();
       switchTurn();
     }
   }
-
   grow();
 }
 
@@ -179,16 +190,47 @@ function switchTurn(){
   }
 }
 
-// 🤖 AI
+// AI
 function aiMove(){
   let empty = board.map((v,i)=>v===null?i:null).filter(v=>v!==null);
+  if(empty.length===0) return;
 
   let move = empty[Math.floor(Math.random()*empty.length)];
   board[move]="ai";
   aiPieces--;
 
+  checkWin();
   switchTurn();
   drawBoard();
+}
+
+// WIN CHECK
+function checkWin(){
+  if(playerPieces===0 && aiPieces===0){
+    return;
+  }
+
+  if(playerPieces<=0){
+    showWinner("Computer Wins 🤖");
+  }
+  if(aiPieces<=0){
+    showWinner("You Win 🎉");
+  }
+}
+
+// WIN SCREEN
+function showWinner(text){
+  document.getElementById("winnerText").innerText = text;
+  document.getElementById("winScreen").style.display="flex";
+}
+
+// RESIGN
+function resign(){
+  if(currentPlayer==="player"){
+    showWinner("Computer Wins 🤖");
+  } else {
+    showWinner("You Win 🎉");
+  }
 }
 
 // START
@@ -197,6 +239,7 @@ function startGame(){
   playerPieces=9;
   aiPieces=9;
   currentPlayer="player";
+  document.getElementById("winScreen").style.display="none";
   drawBoard();
 }
 
