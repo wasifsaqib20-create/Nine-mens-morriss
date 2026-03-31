@@ -10,7 +10,6 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
 
         body {
@@ -234,11 +233,6 @@
             font-weight: 600;
         }
 
-        .payment-btn.active {
-            background: #ffd700;
-            color: #000;
-        }
-
         .history-list {
             max-height: 150px;
             overflow-y: auto;
@@ -297,7 +291,7 @@
         <p style="font-size: 10px; color: #6b5a3e;">PROFESSIONAL GAMING ARENA</p>
     </div>
 
-    <!-- Balance Card - No Bonus -->
+    <!-- Balance Card -->
     <div class="balance-card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div>
@@ -504,6 +498,8 @@
     // ==================== DRAW BOARD ====================
     function drawBoard() {
         ctx.clearRect(0, 0, 450, 450);
+        
+        // Draw lines
         ctx.strokeStyle = '#B8860B';
         ctx.lineWidth = 3;
         ctx.strokeRect(60, 60, 330, 330);
@@ -516,6 +512,7 @@
         ctx.moveTo(225, 60); ctx.lineTo(225, 140); ctx.stroke();
         ctx.moveTo(225, 310); ctx.lineTo(225, 390); ctx.stroke();
         
+        // Draw pieces
         for (let i = 0; i < positions.length; i++) {
             const p = positions[i];
             ctx.beginPath();
@@ -555,20 +552,29 @@
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
-        let x, y;
+        
+        let clientX, clientY;
         if (e.touches) {
-            x = (e.touches[0].clientX - rect.left) * scaleX;
-            y = (e.touches[0].clientY - rect.top) * scaleY;
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
             e.preventDefault();
         } else {
-            x = (e.clientX - rect.left) * scaleX;
-            y = (e.clientY - rect.top) * scaleY;
+            clientX = e.clientX;
+            clientY = e.clientY;
         }
         
-        let closest = -1, minDist = 25;
+        const canvasX = (clientX - rect.left) * scaleX;
+        const canvasY = (clientY - rect.top) * scaleY;
+        
+        let closest = -1;
+        let minDist = 25;
+        
         for (let i = 0; i < positions.length; i++) {
-            const d = Math.hypot(x - positions[i].x, y - positions[i].y);
-            if (d < minDist) { minDist = d; closest = i; }
+            const d = Math.hypot(canvasX - positions[i].x, canvasY - positions[i].y);
+            if (d < minDist) {
+                minDist = d;
+                closest = i;
+            }
         }
         return closest;
     }
@@ -579,6 +585,7 @@
         const idx = getClickedPosition(e);
         if (idx === -1) return;
         
+        // Handle removal after mill
         if (waitingForRemoval) {
             if (board[idx] === 'ai') {
                 board[idx] = null;
@@ -593,6 +600,7 @@
             return;
         }
         
+        // Player's turn
         if (currentPlayer !== 'player') {
             showMessage("Wait for AI's turn!");
             return;
@@ -602,7 +610,10 @@
     }
     
     canvas.addEventListener('click', handleCanvasClick);
-    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleCanvasClick(e); });
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handleCanvasClick(e);
+    });
     
     function makeMove(idx) {
         if (phase === 'placing') {
@@ -688,7 +699,7 @@
         if ((playerPieces === 3 && currentPlayer === 'player') || (aiPieces === 3 && currentPlayer === 'ai')) {
             return true;
         }
-        return adjacents[from]?.includes(to) || false;
+        return adjacents[from] && adjacents[from].includes(to);
     }
     
     function movePiece(from, to) {
@@ -768,14 +779,18 @@
         
         if (phase === 'placing' && aiPlaced < 9) {
             let empty = [];
-            for (let i = 0; i < 24; i++) if (board[i] === null) empty.push(i);
+            for (let i = 0; i < 24; i++) {
+                if (board[i] === null) empty.push(i);
+            }
             if (empty.length) {
                 let move = shouldLose ? empty[empty.length - 1] : empty[Math.floor(Math.random() * empty.length)];
                 placePiece(move, 'ai');
             }
         } else if (phase === 'moving' || phase === 'flying') {
             let aiPcs = [];
-            for (let i = 0; i < 24; i++) if (board[i] === 'ai') aiPcs.push(i);
+            for (let i = 0; i < 24; i++) {
+                if (board[i] === 'ai') aiPcs.push(i);
+            }
             
             for (let p of aiPcs) {
                 for (let to = 0; to < 24; to++) {
@@ -794,27 +809,6 @@
             endGame('ai');
         } else if (aiPieces < 3) {
             endGame('player');
-        } else if (phase !== 'placing') {
-            // Check if player has no moves
-            let playerHasMove = false;
-            for (let i = 0; i < 24; i++) {
-                if (board[i] === 'player') {
-                    for (let j = 0; j < 24; j++) {
-                        if (isValidMove(i, j)) playerHasMove = true;
-                    }
-                }
-            }
-            if (!playerHasMove) endGame('ai');
-            
-            let aiHasMove = false;
-            for (let i = 0; i < 24; i++) {
-                if (board[i] === 'ai') {
-                    for (let j = 0; j < 24; j++) {
-                        if (isValidMove(i, j)) aiHasMove = true;
-                    }
-                }
-            }
-            if (!aiHasMove) endGame('player');
         }
     }
     
@@ -851,4 +845,29 @@
         if (custom >= 10) currentBet = custom;
         document.getElementById('currentBetDisplay').innerText = currentBet;
         
-        if (gameMode !== 'practice' && balance < currentBet
+        if (gameMode !== 'practice' && balance < currentBet) {
+            showMessage("Insufficient balance! Please deposit.");
+            return;
+        }
+        
+        if (gameMode !== 'practice') {
+            balance -= currentBet;
+            addTransaction('BET', currentBet);
+        }
+        
+        // Reset board
+        board.fill(null);
+        playerPieces = 9;
+        aiPieces = 9;
+        playerPlaced = 0;
+        aiPlaced = 0;
+        phase = 'placing';
+        selectedPiece = null;
+        waitingForRemoval = false;
+        currentPlayer = 'player';
+        gameActive = true;
+        gameStarted = true;
+        
+        document.getElementById('playerPieces').innerText = '9';
+        document.getElementById('aiPieces').innerText = '9';
+        document.getElementById('phaseText').innerHTML = 'PLACING
