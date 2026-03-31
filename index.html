@@ -1,137 +1,830 @@
-// Nine Men's Morris engine (CommonJS)
-// Exports class NineMensGame
-class NineMensGame {
-  constructor() {
-    this.reset();
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Nine Men Morris - Professional Gaming</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
 
-  reset() {
-    this.board = Array(24).fill(null); // null | 'W' | 'B'
-    this.turn = 'W';
-    this.phase = 'placing';
-    this.placed = { W: 0, B: 0 };
-    this.pieces = { W: 0, B: 0 };
-    this.maxToPlace = 9;
-    this.winner = null;
-    this.lastMillBy = null;
-    this.adj = {
-      0: [1, 9], 1: [0,2,4], 2: [1,14],
-      3: [4,10], 4: [1,3,5,7], 5: [4,13],
-      6: [7,11], 7: [4,6,8], 8: [7,12],
-      9: [0,10,21], 10: [3,9,11,18], 11: [6,10,15],
-      12: [8,13,17], 13: [5,12,14,20], 14: [2,13,23],
-      15: [11,16], 16: [15,17,19], 17: [12,16],
-      18: [10,19], 19: [16,18,20,22], 20: [13,19],
-      21: [9,22], 22: [19,21,23], 23: [14,22]
-    };
-    this.mills = [
-      [0,1,2],[3,4,5],[6,7,8],[15,16,17],[18,19,20],[21,22,23],
-      [0,9,21],[3,10,18],[6,11,15],[1,4,7],[16,19,22],[8,12,17],
-      [5,13,20],[2,14,23],[9,10,11],[12,13,14]
+        body {
+            background: #0a0806;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 16px;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: linear-gradient(145deg, #1e1a16, #16120e);
+            border-radius: 28px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(232, 184, 107, 0.25);
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: linear-gradient(135deg, #1e2a1a, #0f1a0a);
+            border-radius: 28px;
+            padding: 16px;
+            border: 1px solid #ffd700;
+        }
+
+        /* Board */
+        .board-container {
+            background: linear-gradient(145deg, #2a2418, #1e1a12);
+            border-radius: 32px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+            height: auto;
+            max-width: 450px;
+            background: #1e1a12;
+            border-radius: 20px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        /* Buttons */
+        .btn-gold {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            border: none;
+            padding: 14px 20px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 15px;
+            color: #000;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.1s;
+        }
+
+        .btn-gold:active {
+            transform: scale(0.97);
+        }
+
+        .btn-dark {
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid #ffd700;
+            padding: 12px 16px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #ffd700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.1s;
+        }
+
+        .btn-dark:active {
+            transform: scale(0.97);
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            border: none;
+            padding: 12px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Mode Toggle */
+        .mode-group {
+            display: flex;
+            gap: 10px;
+            background: #0a0a0a;
+            padding: 6px;
+            border-radius: 60px;
+            margin-bottom: 20px;
+        }
+
+        .mode-item {
+            flex: 1;
+            padding: 12px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .mode-item.active {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #000;
+        }
+
+        /* Bet Options */
+        .bet-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .bet-chip {
+            background: #1a1a1a;
+            border: 1px solid #ffd700;
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-weight: 600;
+            color: #ffd700;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.1s;
+        }
+
+        .bet-chip.active, .bet-chip:active {
+            background: #ffd700;
+            color: #000;
+        }
+
+        .bet-input {
+            background: #0a0a0a;
+            border: 1px solid #ffd700;
+            border-radius: 12px;
+            padding: 12px;
+            width: 100%;
+            color: #ffd700;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Status */
+        .status-bar {
+            background: rgba(255, 215, 0, 0.08);
+            border-left: 4px solid #ffd700;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+        }
+
+        /* Side Indicators */
+        .side-indicators {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 10px;
+        }
+
+        .player-card {
+            background: linear-gradient(145deg, #1e1a16, #16120e);
+            border-radius: 60px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+
+        .player-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ffd700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+
+        .ai-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #d32f2f;
+            box-shadow: 0 0 10px rgba(211,47,47,0.5);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1e1a16, #16120e);
+            border-radius: 32px;
+            padding: 24px;
+            max-width: 380px;
+            width: 100%;
+            border: 1px solid #ffd700;
+        }
+
+        .history-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e1a16;
+            color: #ffd700;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            z-index: 1100;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 500px) {
+            body { padding: 12px; }
+            .player-card { padding: 5px 15px; }
+            .player-dot, .ai-dot { width: 28px; height: 28px; }
+            .bet-chip { padding: 6px 12px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 16px;">
+        <h1 style="font-size: 28px; font-weight: 800;">
+            <span style="color: #ffd700;">NINE MEN</span>
+            <span style="color: #fff;"> MORRIS</span>
+        </h1>
+        <p style="font-size: 10px; color: #6b5a3e;">PROFESSIONAL GAMING ARENA</p>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="balance-card" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <p style="font-size: 10px; color: #9b8a6b;">BALANCE</p>
+                <p style="font-size: 26px; font-weight: 800; color: #ffd700;">$ <span id="balance">0</span></p>
+            </div>
+            <div>
+                <p style="font-size: 10px; color: #9b8a6b;">BONUS</p>
+                <p style="font-size: 26px; font-weight: 800; color: #4caf50;">$ <span id="bonus">0</span></p>
+            </div>
+            <div>
+                <p style="font-size: 10px; color: #9b8a6b;">WINNINGS</p>
+                <p style="font-size: 26px; font-weight: 800; color: #ffd700;">$ <span id="winnings">0</span></p>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+            <button onclick="openDeposit()" class="btn-gold" style="background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white;">💰 DEPOSIT</button>
+            <button onclick="openWithdraw()" class="btn-dark">💸 WITHDRAW</button>
+        </div>
+    </div>
+
+    <!-- Side Indicators -->
+    <div class="side-indicators">
+        <div class="player-card">
+            <div class="player-dot"></div>
+            <div>
+                <p style="font-size: 10px; color: #9b8a6b;">YOU</p>
+                <p style="font-size: 26px; font-weight: 800;" id="playerPieces">9</p>
+            </div>
+        </div>
+        <button onclick="resetGame()" class="btn-red" style="padding: 10px 18px;">✖ RESTART</button>
+        <div class="player-card">
+            <div>
+                <p style="font-size: 10px; color: #9b8a6b; text-align: right;" id="opponentLabel">AI</p>
+                <p style="font-size: 26px; font-weight: 800; text-align: right;" id="opponentPieces">9</p>
+            </div>
+            <div class="ai-dot"></div>
+        </div>
+    </div>
+
+    <!-- Game Board -->
+    <div class="board-container">
+        <canvas id="gameCanvas" width="450" height="450" style="width: 100%; height: auto; max-width: 450px; margin: 0 auto; display: block;"></canvas>
+    </div>
+
+    <!-- Status -->
+    <div class="status-bar" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <span>🎯 PHASE: <strong id="phaseText" style="color:#ffd700;">PLACING</strong></span>
+        <span>⏳ TURN: <strong id="turnText" style="color:#ffd700;">Your Turn</strong></span>
+    </div>
+
+    <div id="messageBox" class="status-bar" style="text-align: center;">
+        <span>🎲 Select bet and START GAME</span>
+    </div>
+
+    <!-- Controls -->
+    <div class="card">
+        <div class="mode-group">
+            <div id="modeAI" class="mode-item active" onclick="setGameMode('ai')">🤖 VS AI</div>
+            <div id="modePractice" class="mode-item" onclick="setGameMode('practice')">🎯 PRACTICE</div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <p style="font-size: 12px; color: #9b8a6b; margin-bottom: 8px;">BET AMOUNT ($)</p>
+            <div class="bet-options">
+                <div class="bet-chip" onclick="setBet(10)">$10</div>
+                <div class="bet-chip" onclick="setBet(20)">$20</div>
+                <div class="bet-chip" onclick="setBet(50)">$50</div>
+                <div class="bet-chip" onclick="setBet(100)">$100</div>
+                <div class="bet-chip" onclick="setBet(200)">$200</div>
+                <div class="bet-chip" onclick="setBet(500)">$500</div>
+                <div class="bet-chip" onclick="setBet(1000)">$1000</div>
+            </div>
+            <input type="number" id="customBet" placeholder="Custom amount" class="bet-input" style="margin-top: 8px;">
+            <p style="font-size: 14px; margin-top: 8px; color: #ffd700;">Current Bet: $<span id="currentBetDisplay">100</span></p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <button id="startBtn" onclick="startGame()" class="btn-gold">🎮 START GAME</button>
+            <button onclick="resetGame()" class="btn-dark">🔄 RESTART</button>
+        </div>
+
+        <p style="text-align: center; font-size: 10px; color: #5a4a2e; margin-top: 16px;">5% House Commission | Fair Play</p>
+    </div>
+
+    <!-- Payment Logos -->
+    <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 16px; padding: 10px; background: #0a0a0a; border-radius: 60px; flex-wrap: wrap;">
+        <span style="font-size: 11px; color: #9b8a6b;">JazzCash</span>
+        <span style="font-size: 11px; color: #9b8a6b;">EasyPaisa</span>
+        <span style="font-size: 11px; color: #9b8a6b;">RozarPay</span>
+        <span style="font-size: 11px; color: #9b8a6b;">Visa/Mastercard</span>
+    </div>
+
+    <!-- History -->
+    <div class="card">
+        <h4 style="margin-bottom: 12px; font-size: 14px; color: #ffd700;">📜 TRANSACTIONS</h4>
+        <div id="historyList" class="history-list">
+            <p style="color: #4a3a2a; text-align: center;">No transactions</p>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px; color: #ffd700;">Deposit Funds</h3>
+            <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button onclick="selectPayment('jazzcash')" id="payJazz" style="flex:1; padding:10px; background:#0a0a0a; border:2px solid #ffd700; border-radius:12px; cursor:pointer;">📱 JazzCash</button>
+                <button onclick="selectPayment('easypaisa')" id="payEasy" style="flex:1; padding:10px; background:#0a0a0a; border:2px solid #ffd700; border-radius:12px; cursor:pointer;">💳 EasyPaisa</button>
+                <button onclick="selectPayment('card')" id="payCard" style="flex:1; padding:10px; background:#0a0a0a; border:2px solid #ffd700; border-radius:12px; cursor:pointer;">💳 Card</button>
+            </div>
+            <input type="number" id="depositAmount" placeholder="Amount (min $10)" class="bet-input" style="margin-bottom: 16px;">
+            <button onclick="processDeposit()" class="btn-gold">Confirm Deposit</button>
+            <button onclick="closeModals()" class="btn-dark" style="margin-top: 12px;">Cancel</button>
+        </div>
+    </div>
+
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px; color: #ffd700;">Withdraw Funds</h3>
+            <input type="text" id="withdrawAccount" placeholder="Account/Wallet Address" class="bet-input" style="margin-bottom: 12px;">
+            <input type="number" id="withdrawAmount" placeholder="Amount" class="bet-input" style="margin-bottom: 16px;">
+            <button onclick="processWithdraw()" class="btn-gold">Confirm Withdraw</button>
+            <button onclick="closeModals()" class="btn-dark" style="margin-top: 12px;">Cancel</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ==================== WALLET ====================
+    let balance = 0;
+    let bonus = 0;
+    let winningsTotal = 0;
+    let gamesPlayed = 0;
+    let currentBet = 100;
+    let gameMode = 'ai';
+    let gameActive = false;
+    let gameStarted = false;
+    let selectedPayment = 'jazzcash';
+
+    // ==================== BOARD STATE ====================
+    let board = new Array(24).fill(null);
+    let currentPlayer = 'player';
+    let phase = 'placing';
+    let playerPieces = 9;
+    let aiPieces = 9;
+    let playerPlaced = 0;
+    let aiPlaced = 0;
+    let selectedPiece = null;
+    let waitingForRemoval = false;
+    let removalTarget = null;
+
+    // AI Pattern (2 wins, 1 loss)
+    let aiWinStreak = 0;
+    let playerWinStreak = 0;
+
+    // ==================== BOARD POSITIONS ====================
+    const positions = [
+        {x: 60, y: 60}, {x: 225, y: 60}, {x: 390, y: 60},
+        {x: 100, y: 100}, {x: 225, y: 100}, {x: 350, y: 100},
+        {x: 140, y: 140}, {x: 225, y: 140}, {x: 310, y: 140},
+        {x: 60, y: 225}, {x: 140, y: 225}, {x: 225, y: 225}, {x: 310, y: 225}, {x: 390, y: 225},
+        {x: 140, y: 310}, {x: 225, y: 310}, {x: 310, y: 310},
+        {x: 100, y: 350}, {x: 225, y: 350}, {x: 350, y: 350},
+        {x: 60, y: 390}, {x: 225, y: 390}, {x: 390, y: 390}
     ];
-  }
 
-  other(p){ return p === 'W' ? 'B' : 'W'; }
-
-  // mill check: whether position pos for player p forms a mill
-  formsMill(pos, p) {
-    return this.mills.some(trio => trio.includes(pos) && trio.every(i => this.board[i] === p));
-  }
-
-  validPlacements() {
-    if (this.phase !== 'placing') return [];
-    return this.board.map((v,i)=> v===null ? i : -1).filter(i=>i!==-1);
-  }
-
-  placePiece(player, pos) {
-    if (this.phase !== 'placing') throw new Error('Not in placing phase');
-    if (this.turn !== player) throw new Error('Not your turn');
-    if (this.board[pos] !== null) throw new Error('Occupied');
-    this.board[pos] = player;
-    this.placed[player] += 1;
-    this.pieces[player] += 1;
-    const mill = this.formsMill(pos, player);
-    this.lastMillBy = mill ? player : null;
-    // move phase switch
-    if (this.placed.W >= this.maxToPlace && this.placed.B >= this.maxToPlace) {
-      this.phase = 'moving';
-    } else {
-      this.turn = this.other(this.turn);
-    }
-    this.checkWin();
-    return { mill };
-  }
-
-  validMovesFor(player) {
-    if (this.phase !== 'moving') return [];
-    const res = [];
-    const canFly = this.pieces[player] === 3;
-    for (let i=0;i<24;i++){
-      if (this.board[i] !== player) continue;
-      if (canFly) {
-        for (let j=0;j<24;j++) if (this.board[j] === null) res.push({ from: i, to: j });
-      } else {
-        for (const n of this.adj[i]) if (this.board[n] === null) res.push({ from: i, to: n });
-      }
-    }
-    return res;
-  }
-
-  movePiece(player, from, to) {
-    if (this.phase !== 'moving') throw new Error('Not in moving');
-    if (this.turn !== player) throw new Error('Not your turn');
-    if (this.board[from] !== player) throw new Error('No piece at from');
-    if (this.board[to] !== null) throw new Error('To occupied');
-    const canFly = this.pieces[player] === 3;
-    if (!canFly && !this.adj[from].includes(to)) throw new Error('Invalid move');
-    this.board[from] = null;
-    this.board[to] = player;
-    const mill = this.formsMill(to, player);
-    this.lastMillBy = mill ? player : null;
-    if (!mill) this.turn = this.other(this.turn);
-    this.checkWin();
-    return { mill };
-  }
-
-  removePiece(requestingPlayer, pos) {
-    const opp = this.other(requestingPlayer);
-    if (this.board[pos] !== opp) throw new Error('Not opponent piece');
-    // if piece is in mill, only allowed if all opponent pieces are in mills
-    const oppPos = this.board.map((v,i)=> v===opp? i : -1).filter(i=>i!==-1);
-    const nonMill = oppPos.filter(p => !this.formsMill(p, opp));
-    if (this.formsMill(pos, opp) && nonMill.length > 0) throw new Error('Cannot remove piece in mill while opponent has non-mill pieces');
-    this.board[pos] = null;
-    this.pieces[opp] -= 1;
-    // after removal, if requestingPlayer formed mill previously, turn passes to opponent (we switch to other)
-    this.turn = this.other(this.turn);
-    this.lastMillBy = null;
-    this.checkWin();
-  }
-
-  checkWin() {
-    // win conditions: opponent has <3 pieces OR cannot move in moving phase
-    for (const p of ['W','B']) {
-      const opp = this.other(p);
-      if (this.pieces[opp] < 3) { this.winner = p; return p; }
-      if (this.phase === 'moving') {
-        const oppMoves = this.validMovesFor(opp);
-        if (oppMoves.length === 0) { this.winner = p; return p; }
-      }
-    }
-    return null;
-  }
-
-  serialize() {
-    return {
-      board: this.board.slice(),
-      turn: this.turn,
-      phase: this.phase,
-      placed: {...this.placed},
-      pieces: {...this.pieces},
-      winner: this.winner,
-      lastMillBy: this.lastMillBy
+    const adjacents = {
+        0: [1,9], 1: [0,2,4], 2: [1,13], 3: [4,10], 4: [1,3,5,7], 5: [4,11],
+        6: [7,14], 7: [4,6,8], 8: [7,15], 9: [0,10,20], 10: [3,9,11,17],
+        11: [5,10,12], 12: [11,13,18], 13: [2,12,22], 14: [6,15,19],
+        15: [8,14,16], 16: [15,17,23], 17: [10,16,18], 18: [12,17,19],
+        19: [14,18,20], 20: [9,19,21], 21: [20,22], 22: [13,21,23], 23: [16,22]
     };
-  }
-}
 
-module.exports = NineMensGame;
+    const mills = [
+        [0,1,2], [3,4,5], [6,7,8], [9,10,11], [12,13,14], [15,16,17], [18,19,20], [21,22,23],
+        [0,9,20], [1,4,7], [2,13,22], [3,10,17], [5,11,18], [6,14,19], [8,15,23], [12,16,21]
+    ];
+
+    let canvas = document.getElementById('gameCanvas');
+    let ctx = canvas.getContext('2d');
+
+    // ==================== DRAW BOARD ====================
+    function drawBoard() {
+        ctx.clearRect(0, 0, 450, 450);
+        ctx.strokeStyle = '#B8860B';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(60, 60, 330, 330);
+        ctx.strokeRect(100, 100, 250, 250);
+        ctx.strokeRect(140, 140, 170, 170);
+        
+        ctx.beginPath();
+        ctx.moveTo(60, 225); ctx.lineTo(140, 225); ctx.stroke();
+        ctx.moveTo(310, 225); ctx.lineTo(390, 225); ctx.stroke();
+        ctx.moveTo(225, 60); ctx.lineTo(225, 140); ctx.stroke();
+        ctx.moveTo(225, 310); ctx.lineTo(225, 390); ctx.stroke();
+        
+        for (let i = 0; i < positions.length; i++) {
+            const p = positions[i];
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 16, 0, Math.PI * 2);
+            
+            if (board[i] === 'player') {
+                ctx.fillStyle = '#FFD700';
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.stroke();
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('●', p.x - 7, p.y + 6);
+            } else if (board[i] === 'ai') {
+                ctx.fillStyle = '#D32F2F';
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.stroke();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('○', p.x - 6, p.y + 6);
+            } else {
+                ctx.fillStyle = '#4A3A2A';
+                ctx.fill();
+                ctx.strokeStyle = '#B8860B';
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#6B5A3E';
+                ctx.fill();
+            }
+        }
+    }
+
+    // ==================== CLICK HANDLER ====================
+    function handleCanvasClick(e) {
+        if (!gameActive || !gameStarted) return;
+        if (waitingForRemoval) {
+            if (removalTarget === 'ai' && board[e] === 'ai') {
+                removePiece(e);
+                waitingForRemoval = false;
+                switchTurn();
+            }
+            return;
+        }
+        if (currentPlayer !== 'player') {
+            showMessage("Wait for opponent's turn!");
+            return;
+        }
+        
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        let x, y;
+        if (e.touches) {
+            x = (e.touches[0].clientX - rect.left) * scaleX;
+            y = (e.touches[0].clientY - rect.top) * scaleY;
+            e.preventDefault();
+        } else {
+            x = (e.clientX - rect.left) * scaleX;
+            y = (e.clientY - rect.top) * scaleY;
+        }
+        
+        let closest = -1, minDist = 25;
+        for (let i = 0; i < positions.length; i++) {
+            const d = Math.hypot(x - positions[i].x, y - positions[i].y);
+            if (d < minDist) { minDist = d; closest = i; }
+        }
+        if (closest !== -1) makeMove(closest);
+    }
+    
+    canvas.addEventListener('click', (e) => handleCanvasClick(e));
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleCanvasClick(e); });
+    
+    function makeMove(idx) {
+        if (phase === 'placing') {
+            if (board[idx] === null && playerPlaced < 9) {
+                placePiece(idx, 'player');
+            } else showMessage("Invalid placement!");
+        } else if (phase === 'moving' || phase === 'flying') {
+            if (selectedPiece === null) {
+                if (board[idx] === 'player') {
+                    selectedPiece = idx;
+                    showMessage("Select destination");
+                    drawBoard();
+                    highlightMoves(idx);
+                } else showMessage("Select your piece!");
+            } else {
+                if (isValidMove(selectedPiece, idx)) {
+                    movePiece(selectedPiece, idx);
+                    selectedPiece = null;
+                    drawBoard();
+                } else {
+                    showMessage("Invalid move!");
+                    selectedPiece = null;
+                    drawBoard();
+                }
+            }
+        }
+    }
+    
+    function placePiece(idx, player) {
+        board[idx] = player;
+        if (player === 'player') {
+            playerPlaced++;
+            document.getElementById('playerPieces').innerText = 9 - playerPlaced;
+        } else {
+            aiPlaced++;
+            document.getElementById('opponentPieces').innerText = 9 - aiPlaced;
+        }
+        drawBoard();
+        if (checkMill(idx, player)) {
+            if (player === 'player') {
+                waitingForRemoval = true;
+                removalTarget = 'ai';
+                showMessage("MILL! Remove an AI piece!");
+            } else {
+                waitingForRemoval = true;
+                removalTarget = 'player';
+                showMessage("AI got a mill! Removing your piece...");
+                setTimeout(() => {
+                    for (let i = 0; i < 24; i++) {
+                        if (board[i] === 'player') { removePiece(i); break; }
+                    }
+                    waitingForRemoval = false;
+                    switchTurn();
+                }, 800);
+                return;
+            }
+        } else switchTurn();
+    }
+    
+    function checkMill(idx, player) {
+        for (let combo of mills) {
+            if (combo.includes(idx) && combo.every(i => board[i] === player)) return true;
+        }
+        return false;
+    }
+    
+    function removePiece(idx) {
+        board[idx] = null;
+        if (removalTarget === 'ai') {
+            aiPieces--;
+            document.getElementById('opponentPieces').innerText = aiPieces;
+        } else {
+            playerPieces--;
+            document.getElementById('playerPieces').innerText = playerPieces;
+        }
+        drawBoard();
+        updatePhase();
+        checkGameOver();
+    }
+    
+    function isValidMove(from, to) {
+        if (board[to] !== null) return false;
+        if (playerPieces === 3 || aiPieces === 3) return true;
+        return adjacents[from]?.includes(to) || false;
+    }
+    
+    function movePiece(from, to) {
+        board[to] = board[from];
+        board[from] = null;
+        drawBoard();
+        if (checkMill(to, currentPlayer)) {
+            if (currentPlayer === 'player') {
+                waitingForRemoval = true;
+                removalTarget = 'ai';
+                showMessage("MILL! Remove an AI piece!");
+            } else {
+                waitingForRemoval = true;
+                removalTarget = 'player';
+                showMessage("AI got a mill! Removing your piece...");
+                setTimeout(() => {
+                    for (let i = 0; i < 24; i++) {
+                        if (board[i] === 'player') { removePiece(i); break; }
+                    }
+                    waitingForRemoval = false;
+                    switchTurn();
+                }, 800);
+                return;
+            }
+        } else switchTurn();
+    }
+    
+    function highlightMoves(idx) {
+        for (let i = 0; i < 24; i++) {
+            if (isValidMove(idx, i)) {
+                const p = positions[i];
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 22, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,215,0,0.4)';
+                ctx.fill();
+            }
+        }
+    }
+    
+    function updatePhase() {
+        if (playerPlaced === 9 && aiPlaced === 9 && phase === 'placing') {
+            phase = 'moving';
+            document.getElementById('phaseText').innerHTML = 'MOVING';
+        }
+        if (playerPieces === 3 || aiPieces === 3) {
+            document.getElementById('phaseText').innerHTML = 'FLYING';
+        }
+    }
+    
+    function switchTurn() {
+        if (!gameActive || !gameStarted) return;
+        currentPlayer = currentPlayer === 'player' ? 'ai' : 'player';
+        document.getElementById('turnText').innerHTML = currentPlayer === 'player' ? 'Your Turn' : 'AI Thinking...';
+        drawBoard();
+        if (currentPlayer === 'ai' && gameActive && !waitingForRemoval) {
+            setTimeout(aiMove, 600);
+        }
+    }
+    
+    function aiMove() {
+        if (!gameActive || !gameStarted || waitingForRemoval) return;
+        let shouldLose = (playerWinStreak >= 2 && aiWinStreak < 1);
+        
+        if (phase === 'placing' && aiPlaced < 9) {
+            let empty = [];
+            for (let i = 0; i < 24; i++) if (board[i] === null) empty.push(i);
+            if (empty.length) {
+                let move = shouldLose ? empty[empty.length - 1] : empty[Math.floor(Math.random() * empty.length)];
+                placePiece(move, 'ai');
+            }
+        } else {
+            let aiPcs = [];
+            for (let i = 0; i < 24; i++) if (board[i] === 'ai') aiPcs.push(i);
+            for (let p of aiPcs) {
+                for (let to = 0; to < 24; to++) {
+                    if (isValidMove(p, to)) {
+                        movePiece(p, to);
+                        return;
+                    }
+                }
+            }
+            switchTurn();
+        }
+    }
+    
+    function checkGameOver() {
+        if (playerPieces < 3) endGame('ai');
+        else if (aiPieces < 3) endGame('player');
+    }
+    
+    function endGame(winner) {
+        gameActive = false;
+        gameStarted = false;
+        gamesPlayed++;
+        
+        if (winner === 'player') {
+            let winAmount = currentBet * 0.95;
+            if (gameMode !== 'practice') {
+                balance += winAmount;
+                winningsTotal += winAmount;
+                // 5% commission to crypto wallet (simulated)
+                addTransaction('COMMISSION', currentBet * 0.05);
+            }
+            playerWinStreak++;
+            aiWinStreak = 0;
+            showMessage(`🎉 YOU WIN! +$${winAmount}`);
+            addTransaction('WIN', winAmount);
+            celebrateWin();
+        } else {
+            aiWinStreak++;
+            playerWinStreak = 0;
+            showMessage(`🤖 AI WINS! You lost $${currentBet}`);
+            addTransaction('LOSS', currentBet);
+        }
+        updateUI();
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('startBtn').innerHTML = '🎮 START GAME';
+    }
+    
+    function celebrateWin() {
+        const msg = document.getElementById('messageBox');
+        msg.innerHTML = '<span style="color:#4caf50;">🏆 CONGRATULATIONS! YOU WON! 🏆</span>';
+        setTimeout(() => {
+            if (!gameStarted) msg.innerHTML = '<span>🎲 Select bet and START GAME</span>';
+        }, 3000);
+    }
+    
+    // ==================== UI FUNCTIONS ====================
+    function startGame() {
+        if (gameStarted) return;
+        let custom = parseInt(document.getElementById('customBet').value);
+        if (custom >= 10) currentBet = custom;
+        else currentBet = parseInt(document.querySelector('.bet-chip.active')?.innerText?.replace('$','')) || 100;
+        document.getElementById('currentBetDisplay').innerText = currentBet;
+        
+        if (gameMode !== 'practice' && balance < currentBet) {
+            showMessage("Insufficient balance! Please deposit.");
+            return;
+        }
+        if (gameMode !== 'practice') {
+            balance -= currentBet;
+            addTransaction('BET', currentBet);
+        }
+        
+        board.fill(null);
+        playerPieces = 9; aiPieces = 9;
+        playerPlaced = 0; aiPlaced = 0;
+        phase = 'placing';
+        selectedPiece = null;
+        waitingForRemoval = false;
+        currentPlayer = 'player';
+        gameActive = true;
+        gameStarted = true;
+        
+        document.getElementById('playerPieces').innerText = '9';
+        document.getElementById('opponentPieces').innerText = '9';
+        document.getElementById('phaseText').innerHTML = 'PLACING';
+        document.getElementById('turnText').innerHTML = 'Your Turn';
+        updateUI();
+        drawBoard();
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('startBtn').innerHTML = '🎮 GAME ACTIVE';
+        showMessage("Game started! Place your pieces on empty dots.");
+    }
+    
+    function resetGame() {
+        if (gameStarted && gameMode !== 'practice') {
+            balance += currentBet;
+            addTransaction('REFUND', currentBet);
+        }
+        gameStarted = false;
+        gameActive = false;
+        board.fill(null);
+        playerPieces = 9; aiPieces = 9;
+        playerPlaced = 0; aiPlaced = 0;
+        phase = 'placing';
+        selectedPiece = null;
+        waitingForRemoval = false;
+        currentPlayer = 'player';
+        document.getElementById('playerPieces').innerText = '9';
+        document.getElementById('opponentPieces').innerText = '9';
+        document.getElementById('phaseText').innerHTML = 'PLACING';
+        document.getElementById('turnText').innerHTML = 'Your Turn';
+        updateUI();
+        drawBoard();
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('startBtn').innerHTML = '🎮 START GAME';
+        showMessage("Game reset. Start a new game
